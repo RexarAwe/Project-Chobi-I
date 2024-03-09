@@ -1,0 +1,39 @@
+[gd_scene load_steps=6 format=3 uid="uid://bgvcdb44dq4c8"]
+
+[ext_resource type="Script" path="res://Player.cs" id="1_24l7d"]
+[ext_resource type="Texture2D" uid="uid://cgunrn5q18c76" path="res://sprites/swordsman.png" id="2_3x8x0"]
+[ext_resource type="Texture2D" uid="uid://cqu3a4bmuqb10" path="res://sprites/select_border.png" id="3_iy371"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_03tkx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_3x8x0")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nb14s"]
+size = Vector2(60, 84)
+
+[node name="Player" type="Area2D"]
+position = Vector2(153, 120)
+script = ExtResource("1_24l7d")
+metadata/_edit_group_ = true
+
+[node name="CharacterSprite" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.03, 0.03)
+sprite_frames = SubResource("SpriteFrames_03tkx")
+
+[node name="SelectionBorderIndicator" type="Sprite2D" parent="."]
+visible = false
+scale = Vector2(0.03, 0.03)
+texture = ExtResource("3_iy371")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_nb14s")
+
+[connection signal="mouse_entered" from="." to="." method="OnMouseEntered"]
+[connection signal="mouse_exited" from="." to="." method="OnMouseExited"]
