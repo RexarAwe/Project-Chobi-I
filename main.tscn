@@ -1,3 +1,10 @@
-[gd_scene format=3 uid="uid://ckuyl34k6m82u"]
+[gd_scene load_steps=3 format=3 uid="uid://ckuyl34k6m82u"]
+
+[ext_resource type="PackedScene" uid="uid://d4imqu75qyqjt" path="res://tile_map.tscn" id="1_6fhrc"]
+[ext_resource type="PackedScene" uid="uid://xgwls28a2j5b" path="res://tile_map_overlay.tscn" id="2_wmlwy"]
 
 [node name="main" type="Node"]
+
+[node name="TileMap" parent="." instance=ExtResource("1_6fhrc")]
+
+[node name="TileMap2" parent="." instance=ExtResource("2_wmlwy")]
