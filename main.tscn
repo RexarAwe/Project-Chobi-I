@@ -1,10 +1,19 @@
-[gd_scene load_steps=3 format=3 uid="uid://ckuyl34k6m82u"]
+[gd_scene load_steps=4 format=3 uid="uid://ckuyl34k6m82u"]
 
 [ext_resource type="PackedScene" uid="uid://d4imqu75qyqjt" path="res://tile_map.tscn" id="1_6fhrc"]
-[ext_resource type="PackedScene" uid="uid://xgwls28a2j5b" path="res://tile_map_overlay.tscn" id="2_wmlwy"]
+[ext_resource type="Script" path="res://Main.cs" id="1_h7o1q"]
+[ext_resource type="PackedScene" uid="uid://bgvcdb44dq4c8" path="res://player.tscn" id="2_3yckp"]
 
-[node name="main" type="Node"]
+[node name="Main" type="Node"]
+script = ExtResource("1_h7o1q")
 
 [node name="TileMap" parent="." instance=ExtResource("1_6fhrc")]
 
-[node name="TileMap2" parent="." instance=ExtResource("2_wmlwy")]
+[node name="Player" parent="." instance=ExtResource("2_3yckp")]
+position = Vector2(162, 274)
+
+[node name="Player2" parent="." instance=ExtResource("2_3yckp")]
+position = Vector2(254, 202)
+
+[node name="Player3" parent="." instance=ExtResource("2_3yckp")]
+position = Vector2(142, 137)

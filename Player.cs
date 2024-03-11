@@ -1,10 +1,18 @@
 using Godot;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 public partial class Player : Area2D
 {
-    public bool selected = false;
+    public int ID { get; set; }
+    private bool selected = false;
+
+    //private int ActionPoint { get; set; } = 2;
+    private int action_point;
+    public bool Turn { get; set; } = false;
+
     private bool hovered = false;
+    
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()

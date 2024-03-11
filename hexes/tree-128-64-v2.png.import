@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://x8u3a0yf0qg1"
-path="res://.godot/imported/WWT-09v2.png-d41554566b15c03577dd05dc13ce37e6.ctex"
+uid="uid://blbgs65aeup0u"
+path="res://.godot/imported/tree-128-64-v2.png-bf6ab78dacd2858d70b4af574d089505.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://WWT-09v2.png"
-dest_files=["res://.godot/imported/WWT-09v2.png-d41554566b15c03577dd05dc13ce37e6.ctex"]
+source_file="res://hexes/tree-128-64-v2.png"
+dest_files=["res://.godot/imported/tree-128-64-v2.png-bf6ab78dacd2858d70b4af574d089505.ctex"]
 
 [params]
 
