@@ -9,6 +9,14 @@
     {
       "AbsoluteMoniker": "D:0:0:{0C9683C2-D540-4643-9CF9-D969B19AAFD0}|Project Chobi I.csproj|c:\\users\\gavin\\documents\\godot projects\\project chobi i\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0C9683C2-D540-4643-9CF9-D969B19AAFD0}|Project Chobi I.csproj|solutionrelative:player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C9683C2-D540-4643-9CF9-D969B19AAFD0}|Project Chobi I.csproj|c:\\users\\gavin\\documents\\godot projects\\project chobi i\\hud.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0C9683C2-D540-4643-9CF9-D969B19AAFD0}|Project Chobi I.csproj|solutionrelative:hud.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C9683C2-D540-4643-9CF9-D969B19AAFD0}|Project Chobi I.csproj|c:\\users\\gavin\\documents\\godot projects\\project chobi i\\project chobi i.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{0C9683C2-D540-4643-9CF9-D969B19AAFD0}|Project Chobi I.csproj|solutionrelative:project chobi i.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,8 +26,34 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Project Chobi I",
+              "DocumentMoniker": "C:\\USERS\\GAVIN\\DOCUMENTS\\GODOT PROJECTS\\PROJECT CHOBI I\\Project Chobi I.csproj",
+              "RelativeDocumentMoniker": "Project Chobi I.csproj",
+              "ToolTip": "C:\\USERS\\GAVIN\\DOCUMENTS\\GODOT PROJECTS\\PROJECT CHOBI I\\Project Chobi I.csproj",
+              "RelativeToolTip": "Project Chobi I.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAOAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-03-15T16:57:16.586Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "HUD.cs",
+              "DocumentMoniker": "C:\\Users\\Gavin\\Documents\\godot projects\\Project Chobi I\\HUD.cs",
+              "RelativeDocumentMoniker": "HUD.cs",
+              "ToolTip": "C:\\Users\\Gavin\\Documents\\godot projects\\Project Chobi I\\HUD.cs",
+              "RelativeToolTip": "HUD.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAACAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-12T13:04:12.536Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -28,7 +62,7 @@
               "RelativeDocumentMoniker": "Main.cs",
               "ToolTip": "C:\\Users\\Gavin\\Documents\\godot projects\\Project Chobi I\\Main.cs",
               "RelativeToolTip": "Main.cs",
-              "ViewState": "AQIAAAUAAAAAAAAAAAAQwB8AAAAyAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAVAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-03-11T13:07:27.96Z",
               "EditorCaption": ""
@@ -41,7 +75,7 @@
               "RelativeDocumentMoniker": "Player.cs",
               "ToolTip": "C:\\Users\\Gavin\\Documents\\godot projects\\Project Chobi I\\Player.cs",
               "RelativeToolTip": "Player.cs",
-              "ViewState": "AQIAAAMAAAAAAAAAAAAAABUAAAAFAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAMAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-03-08T12:13:31.592Z",
               "EditorCaption": ""

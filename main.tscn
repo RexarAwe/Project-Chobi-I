@@ -6,14 +6,15 @@
 
 [node name="Main" type="Node"]
 script = ExtResource("1_h7o1q")
+PlayerScene = ExtResource("2_3yckp")
 
 [node name="TileMap" parent="." instance=ExtResource("1_6fhrc")]
 
 [node name="Player" parent="." instance=ExtResource("2_3yckp")]
-position = Vector2(162, 274)
+position = Vector2(139, 370)
 
 [node name="Player2" parent="." instance=ExtResource("2_3yckp")]
-position = Vector2(254, 202)
+position = Vector2(381, 321)
 
 [node name="Player3" parent="." instance=ExtResource("2_3yckp")]
-position = Vector2(142, 137)
+position = Vector2(234, 149)

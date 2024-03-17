@@ -1,24 +1,28 @@
 using Godot;
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 public partial class Player : Area2D
 {
+    //[Signal]
+    //public delegate void MovedPlayerEventHandler();
+    [Signal]
+    public delegate void EndTurnEventHandler();
+
     public int ID { get; set; }
-    private bool selected = false;
 
     //private int ActionPoint { get; set; } = 2;
-    private int action_point;
-    public bool Turn { get; set; } = false;
+    private int action_point = 0;
 
     private bool hovered = false;
+    public bool Playing { get; set; } = false;
     
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
-        var SelectionBorderIndicator = GetNode<Sprite2D>("SelectionBorderIndicator");
-        SelectionBorderIndicator.Visible = false;
+        
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -26,36 +30,88 @@ public partial class Player : Area2D
     {
         // Check for mouse click
         //if (Input.IsActionPressed("mouse_click") && hovered)
-        if (Input.IsActionJustReleased("left_mouse_click"))
-        {
-            if (hovered)
-            {
-                //GD.Print("Mouse is clicked within the CollisionShape2D!");
-                var SelectionBorderIndicator = GetNode<Sprite2D>("SelectionBorderIndicator");
-                SelectionBorderIndicator.Visible = !SelectionBorderIndicator.Visible;
-                selected = !selected;
-                if (selected)
-                {
-                    GD.Print("Unit Selected");
-                }
-                else
-                {
-                    GD.Print("Unit Deselected");
-                }
-            }
-            else
-            {
-                if (selected)
-                {
-                    Vector2 mousePosition = GetGlobalMousePosition();
-                    Position = mousePosition;
+        //if (Input.IsActionJustReleased("left_mouse_click"))
+        //{
+        //    if (Playing)
+        //    {
+        //        Vector2 mousePosition = GetGlobalMousePosition();
+        //        Position = mousePosition;
 
-                    //Vector2 mousePosition = GetViewport().GetMousePosition();
-                    //Position = mousePosition;
-                }
-            }
-        }
+        //        SetPlaying(false);
+        //        GD.Print(ID + " moved to" + Position);
+
+        //        EmitSignal(SignalName.EndTurn);
+        //        GD.Print("Emitted TurnEnd Signal");
+        //    }
+
+        //    //if (hovered)
+        //    //{
+        //    //    //GD.Print("Mouse is clicked within the CollisionShape2D!");
+        //    //    SetSelect(!selected);
+        //    //}
+        //    //else
+        //    //{
+        //    //    if (selected)
+        //    //    {
+        //    //        Vector2 mousePosition = GetGlobalMousePosition();
+        //    //        Position = mousePosition;
+
+        //    //        //Vector2 mousePosition = GetViewport().GetMousePosition();
+        //    //        //Position = mousePosition;
+        //    //    }
+        //    //}
+        //}
+
+        //if (Input.IsActionJustReleased("end_turn"))
+        //{
+        //    //GD.Print("End Turn Button Pressed");
+        //    //EmitSignal(SignalName.TurnEnd);
+        //    //GD.Print("Emitted TurnEnd Signal");
+        //}
     }
+
+    //public void PlayTurn()
+    //{
+    //    SetPlaying(true);
+    //}
+    
+    public void SetPlaying(bool val)
+    {
+        var SelectionBorderIndicator = GetNode<Sprite2D>("SelectionBorderIndicator");
+        SelectionBorderIndicator.Visible = val;
+
+        Playing = val;
+    }
+
+    public void SetActionPoints(int val)
+    {
+        Debug.Assert(val >= 0, "Assertion failed: The value should be larger than or equal to 0 when assigning action points to a player");
+        action_point = val;
+    }
+
+    //public void PlayTurn()
+    //{
+    //    GD.Print("Playing Turn...");
+
+    //    // players can only move during their turn for now, so always default to move
+    //    GD.Print("Awaiting Move Action");
+    //    // move action
+    //    PerformMoveAction();
+    //    //await ToSignal(player, Player.SignalName.EndTurn);
+
+    //    EmitSignal(SignalName.TurnEnd);
+    //    GD.Print("Emitted TurnEnd Signal");
+    //}
+
+    //async public void PerformMoveAction()
+    //{
+    //    player_moving = true;
+
+    //    // await user input to move to location
+    //    await ToSignal(this, Player.SignalName.MovedPlayer);
+    //    player_moving = false;
+    //    GD.Print("Move Action Performed");
+    //}
 
     //public override void _Input(InputEvent @event)
     //{
@@ -82,15 +138,20 @@ public partial class Player : Area2D
     //    //GD.Print("Viewport Resolution is: ", GetViewport().GetVisibleRect().Size);
     //}
 
+    public void MovePlayer()
+    {
+        Vector2 mousePosition = GetGlobalMousePosition();
+        Position = mousePosition;
+    }
+
     public void OnMouseEntered()
     {
-        GD.Print("Mouse is within the CollisionShape2D!");
+        GD.Print("Player ID: " + ID);
         hovered = true;
     }
 
     public void OnMouseExited()
     {
-        GD.Print("Mouse is within the CollisionShape2D!");
         hovered = false;
     }
 }
