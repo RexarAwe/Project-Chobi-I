@@ -11,6 +11,7 @@ public partial class Main : Node
     private Player current_player;
     private int current_player_idx;
     private bool start_round = false;
+    private bool round_ongoing = false;
 
     [Signal]
     public delegate void DoneActionEventHandler();
@@ -22,7 +23,6 @@ public partial class Main : Node
         GD.Print(a.one());
 
         start_round = true;
-        current_player_idx = 0;
 
         // PlayTurn(); // needs a redesign, this should probably move to process, let every "signal" stuff be within this script, with actions and stuff coming from the player scripts
     }
@@ -38,11 +38,20 @@ public partial class Main : Node
 
         if (Input.IsActionJustReleased("left_mouse_click"))
         {
-            if (current_player.Playing)
+            if (current_player.Playing && round_ongoing)
             {
                 current_player.MovePlayer();
                 current_player.SetPlaying(false);
-                PlayTurn(); // play next player
+
+                if (current_player_idx < players.Count)
+                {
+                    PlayTurn(); // play next player
+                }
+                else
+                {
+                    GD.Print("All players have played a turn.");
+                    round_ongoing = false;
+                }
             }
         }
 
@@ -61,6 +70,8 @@ public partial class Main : Node
         CheckPlayers();
         ShufflePlayersList();
         CheckPlayers();
+        round_ongoing = true;
+        current_player_idx = 0;
         PlayTurn(); // play first turn
     }
 
@@ -71,6 +82,12 @@ public partial class Main : Node
         // player.PlayTurn();
         current_player.SetPlaying(true);
         current_player_idx++;
+        //GD.Print("current_player_idx: " + current_player_idx);
+        //if (current_player_idx == players.Count + 1)
+        //{
+        //    GD.Print("All players have played a turn.");
+        //    round_ongoing = false;
+        //}
     }
 
     public void EndTurn()
@@ -131,6 +148,8 @@ public partial class Main : Node
                 players.Add(player);
             }
         }
+
+        GD.Print("players.Count: " + players.Count);
     }
 
     private void ShufflePlayersList()

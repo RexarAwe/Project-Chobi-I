@@ -31,15 +31,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "Project Chobi I",
+              "Title": "Project Chobi I.csproj",
               "DocumentMoniker": "C:\\USERS\\GAVIN\\DOCUMENTS\\GODOT PROJECTS\\PROJECT CHOBI I\\Project Chobi I.csproj",
               "RelativeDocumentMoniker": "Project Chobi I.csproj",
               "ToolTip": "C:\\USERS\\GAVIN\\DOCUMENTS\\GODOT PROJECTS\\PROJECT CHOBI I\\Project Chobi I.csproj",
               "RelativeToolTip": "Project Chobi I.csproj",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAOAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-03-15T16:57:16.586Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-03-15T16:57:16.586Z"
             },
             {
               "$type": "Document",
@@ -51,8 +50,7 @@
               "RelativeToolTip": "HUD.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAACAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-03-12T13:04:12.536Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-03-12T13:04:12.536Z"
             },
             {
               "$type": "Document",
@@ -62,7 +60,7 @@
               "RelativeDocumentMoniker": "Main.cs",
               "ToolTip": "C:\\Users\\Gavin\\Documents\\godot projects\\Project Chobi I\\Main.cs",
               "RelativeToolTip": "Main.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAVAAAA",
+              "ViewState": "AQIAACMAAAAAAAAAAAAwwDQAAAAqAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-03-11T13:07:27.96Z",
               "EditorCaption": ""
@@ -77,8 +75,7 @@
               "RelativeToolTip": "Player.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAMAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-03-08T12:13:31.592Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-03-08T12:13:31.592Z"
             }
           ]
         }
