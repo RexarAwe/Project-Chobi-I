@@ -14,15 +14,25 @@ public partial class Player : Area2D
 
     //private int ActionPoint { get; set; } = 2;
     private int action_point = 0;
+    private int move_range = 6;
 
     private bool hovered = false;
     public bool Playing { get; set; } = false;
-    
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
-        
+        GD.Print("Position: " + Position);
+
+        TileMap parent_tile_map = GetNode<TileMap>("../TileMap");
+        var map_position = parent_tile_map.LocalToMap(Position);
+        GD.Print("Map Position: " + map_position);
+
+        var centered_position = parent_tile_map.MapToLocal(map_position);
+        GD.Print("Centered Position: " + centered_position);
+
+        // center the position to the tilemap
+        Position = centered_position;
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -70,11 +80,6 @@ public partial class Player : Area2D
         //}
     }
 
-    //public void PlayTurn()
-    //{
-    //    SetPlaying(true);
-    //}
-    
     public void SetPlaying(bool val)
     {
         var SelectionBorderIndicator = GetNode<Sprite2D>("SelectionBorderIndicator");
@@ -138,8 +143,15 @@ public partial class Player : Area2D
     //    //GD.Print("Viewport Resolution is: ", GetViewport().GetVisibleRect().Size);
     //}
 
+    //public void MovePlayer()
+    //{
+    //    Vector2 mousePosition = GetGlobalMousePosition();
+    //    Position = mousePosition;
+    //}
+
     public void MovePlayer()
     {
+        // 
         Vector2 mousePosition = GetGlobalMousePosition();
         Position = mousePosition;
     }
