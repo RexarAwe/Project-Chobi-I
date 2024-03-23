@@ -104,7 +104,7 @@ public partial class Player : Area2D
     public void SetActionPoints(int val)
     {
         Debug.Assert(val >= 0, "Assertion failed: The value should be larger than or equal to 0 when assigning action points to a player");
-        action_points = val;
+        ActionPoints = val;
     }
 
     //public void PlayTurn()

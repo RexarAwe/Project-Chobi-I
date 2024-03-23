@@ -91,12 +91,19 @@ public partial class Main : Node
         // player.PlayTurn();
         current_player.SetPlaying(true);
         current_player_idx++;
-        //GD.Print("current_player_idx: " + current_player_idx);
-        //if (current_player_idx == players.Count + 1)
-        //{
-        //    GD.Print("All players have played a turn.");
-        //    round_ongoing = false;
-        //}
+
+        // reset the movement tiles layer (1)
+        TileMap.ClearLayer(1);
+
+        // MoveRange
+
+        GD.Print("Move Range Position List: ");
+        List<Vector2I> move_positions = MoveRange();
+        for (int i = 0; i < move_positions.Count; i++)
+        {
+            GD.Print("  " + move_positions[i]);
+            TileMap.SetCell(1, move_positions[i], atlus_source_id, atlus_coord, alternative_tile);
+        }
 
         //GD.Print("TileMap.GetUsedCells(0): " + TileMap.GetUsedCells(0));
         //GD.Print("TileMap.GetUsedCells(1): " + TileMap.GetUsedCells(1));
@@ -224,41 +231,60 @@ public partial class Main : Node
         }
     }
 
-    public void MoveRange(int action_points)
+    public List<Vector2I> MoveRange()
     {
-        List<Vector2I> tile_coord_list = new List<Vector2I>();
+        List<Vector2I> map_pos_list = new List<Vector2I>();
 
-        var map_position = TileMap.LocalToMap(current_player.Position);
-
+        var orig_map_position = TileMap.LocalToMap(current_player.Position);
+        Vector2I map_position = orig_map_position;
         // in each direction, mark tiles that can be reached based on remaining action points
+        // TopLeftSide
         for (int i = 0; i < current_player.ActionPoints; i++)
         {
-
+            map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopLeftSide);
+            map_pos_list.Add(map_position);
         }
 
-        //Vector2I neighbor_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopLeftSide);
-        //TileMap.SetCell(1, neighbor_position, atlus_source_id, atlus_coord, alternative_tile);
+        // TopSide
+        map_position = orig_map_position;
+        for (int i = 0; i < current_player.ActionPoints; i++)
+        {
+            map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopSide);
+            map_pos_list.Add(map_position);
+        }
 
-        //neighbor_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopSide);
-        ////GD.Print("TopSide: " + neighbor_position);
-        //TileMap.SetCell(1, neighbor_position, atlus_source_id, atlus_coord, alternative_tile);
+        // TopRightSide
+        map_position = orig_map_position;
+        for (int i = 0; i < current_player.ActionPoints; i++)
+        {
+            map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopRightSide);
+            map_pos_list.Add(map_position);
+        }
 
-        //neighbor_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopRightSide);
-        ////GD.Print("TopRightSide: " + neighbor_position);
-        //TileMap.SetCell(1, neighbor_position, atlus_source_id, atlus_coord, alternative_tile);
+        // BottomRightSide
+        map_position = orig_map_position;
+        for (int i = 0; i < current_player.ActionPoints; i++)
+        {
+            map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomRightSide);
+            map_pos_list.Add(map_position);
+        }
 
-        ////neighbor_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.RightSide);
-        ////GD.Print("RightSide: " + neighbor_position);
-        //neighbor_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomRightSide);
-        ////GD.Print("BottomRightSide: " + neighbor_position);
-        //TileMap.SetCell(1, neighbor_position, atlus_source_id, atlus_coord, alternative_tile);
+        // BottomSide
+        map_position = orig_map_position;
+        for (int i = 0; i < current_player.ActionPoints; i++)
+        {
+            map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomSide);
+            map_pos_list.Add(map_position);
+        }
 
-        //neighbor_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomSide);
-        ////GD.Print("BottomSide: " + neighbor_position);
-        //TileMap.SetCell(1, neighbor_position, atlus_source_id, atlus_coord, alternative_tile);
+        // BottomLeftSide
+        map_position = orig_map_position;
+        for (int i = 0; i < current_player.ActionPoints; i++)
+        {
+            map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomLeftSide);
+            map_pos_list.Add(map_position);
+        }
 
-        //neighbor_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomLeftSide);
-        ////GD.Print("BottomLeftSide: " + neighbor_position);
-        //TileMap.SetCell(1, neighbor_position, atlus_source_id, atlus_coord, alternative_tile);
+        return map_pos_list;
     }
 }
