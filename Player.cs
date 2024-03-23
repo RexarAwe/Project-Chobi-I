@@ -1,7 +1,9 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using static Godot.Projection;
 
 public partial class Player : Area2D
 {
@@ -13,22 +15,28 @@ public partial class Player : Area2D
     public int ID { get; set; }
 
     //private int ActionPoint { get; set; } = 2;
-    private int action_point = 0;
-    private int move_range = 6;
+
+
+    private TileMap TileMap;
+    private Sprite2D SelectionBorderIndicator;
+    private TileMap MovementRangeIndicator;
 
     private bool hovered = false;
     public bool Playing { get; set; } = false;
+    public int ActionPoints = 2;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
         GD.Print("Position: " + Position);
 
-        TileMap parent_tile_map = GetNode<TileMap>("../TileMap");
-        var map_position = parent_tile_map.LocalToMap(Position);
-        GD.Print("Map Position: " + map_position);
+        TileMap = GetNode<TileMap>("../TileMap");
+        SelectionBorderIndicator = GetNode<Sprite2D>("SelectionBorderIndicator");
+        MovementRangeIndicator = GetNode<TileMap>("MoveRange");
 
-        var centered_position = parent_tile_map.MapToLocal(map_position);
+        var map_position = TileMap.LocalToMap(Position);
+        GD.Print("Map Position: " + map_position);
+        var centered_position = TileMap.MapToLocal(map_position);
         GD.Print("Centered Position: " + centered_position);
 
         // center the position to the tilemap
@@ -82,16 +90,21 @@ public partial class Player : Area2D
 
     public void SetPlaying(bool val)
     {
-        var SelectionBorderIndicator = GetNode<Sprite2D>("SelectionBorderIndicator");
+        // MovementRangeIndicator.Visible = val;
         SelectionBorderIndicator.Visible = val;
-
         Playing = val;
+
+        // try coloring tiles here
+        // MovementRangeIndicator.Clear(); // clear tiles for some reason
+        // GD.Print("MovementRangeIndicator.GetUsedCells(1): " + MovementRangeIndicator.GetUsedCells(-1));
+
+        //MovementRangeIndicator.SetCell()
     }
 
     public void SetActionPoints(int val)
     {
         Debug.Assert(val >= 0, "Assertion failed: The value should be larger than or equal to 0 when assigning action points to a player");
-        action_point = val;
+        action_points = val;
     }
 
     //public void PlayTurn()
@@ -151,9 +164,13 @@ public partial class Player : Area2D
 
     public void MovePlayer()
     {
-        // 
         Vector2 mousePosition = GetGlobalMousePosition();
-        Position = mousePosition;
+
+        var map_position = TileMap.LocalToMap(mousePosition);
+        var centered_position = TileMap.MapToLocal(map_position);
+
+        // center the position to the tilemap
+        Position = centered_position;
     }
 
     public void OnMouseEntered()
