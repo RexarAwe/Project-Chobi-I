@@ -185,6 +185,28 @@ public partial class Main : Node
     //    //}
     //}
 
+    public List<T> RemoveDuplicatesFromList<T>(List<T> list)
+    {
+        // Use HashSet to store unique items
+        HashSet<T> set = new HashSet<T>();
+
+        // List to store unique items
+        List<T> uniqueList = new List<T>();
+
+        // Iterate through the list
+        foreach (T item in list)
+        {
+            // If item is not already in the set, add it to the set and unique list
+            if (!set.Contains(item))
+            {
+                set.Add(item);
+                uniqueList.Add(item);
+            }
+        }
+
+        return uniqueList;
+    }
+
     public void CollectPlayers()
 	{
         players = new List<Player>();
@@ -231,60 +253,126 @@ public partial class Main : Node
         }
     }
 
-    public List<Vector2I> MoveRange()
+    public List<Vector2I> GetNeighbors(Vector2I orig_map_position)
     {
         List<Vector2I> map_pos_list = new List<Vector2I>();
+        Vector2I map_position;
 
-        var orig_map_position = TileMap.LocalToMap(current_player.Position);
-        Vector2I map_position = orig_map_position;
-        // in each direction, mark tiles that can be reached based on remaining action points
-        // TopLeftSide
-        for (int i = 0; i < current_player.ActionPoints; i++)
-        {
-            map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopLeftSide);
-            map_pos_list.Add(map_position);
-        }
+        // add the neighboring tiles to the list
+        map_position = TileMap.GetNeighborCell(orig_map_position, TileSet.CellNeighbor.TopLeftSide);
+        map_pos_list.Add(map_position);
+        map_position = TileMap.GetNeighborCell(orig_map_position, TileSet.CellNeighbor.TopSide);
+        map_pos_list.Add(map_position);
+        map_position = TileMap.GetNeighborCell(orig_map_position, TileSet.CellNeighbor.TopRightSide);
+        map_pos_list.Add(map_position);
+        map_position = TileMap.GetNeighborCell(orig_map_position, TileSet.CellNeighbor.BottomRightSide);
+        map_pos_list.Add(map_position);
+        map_position = TileMap.GetNeighborCell(orig_map_position, TileSet.CellNeighbor.BottomSide);
+        map_pos_list.Add(map_position);
+        map_position = TileMap.GetNeighborCell(orig_map_position, TileSet.CellNeighbor.BottomLeftSide);
+        map_pos_list.Add(map_position);
 
-        // TopSide
-        map_position = orig_map_position;
-        for (int i = 0; i < current_player.ActionPoints; i++)
-        {
-            map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopSide);
-            map_pos_list.Add(map_position);
-        }
-
-        // TopRightSide
-        map_position = orig_map_position;
-        for (int i = 0; i < current_player.ActionPoints; i++)
-        {
-            map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopRightSide);
-            map_pos_list.Add(map_position);
-        }
-
-        // BottomRightSide
-        map_position = orig_map_position;
-        for (int i = 0; i < current_player.ActionPoints; i++)
-        {
-            map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomRightSide);
-            map_pos_list.Add(map_position);
-        }
-
-        // BottomSide
-        map_position = orig_map_position;
-        for (int i = 0; i < current_player.ActionPoints; i++)
-        {
-            map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomSide);
-            map_pos_list.Add(map_position);
-        }
-
-        // BottomLeftSide
-        map_position = orig_map_position;
-        for (int i = 0; i < current_player.ActionPoints; i++)
-        {
-            map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomLeftSide);
-            map_pos_list.Add(map_position);
-        }
+        // GD.Print(map_pos_list);
 
         return map_pos_list;
     }
+
+    public List<Vector2I> MoveRange()
+    {
+        GD.Print("In MoveRange");
+
+        List<Vector2I> anchor_map_pos_list = new List<Vector2I>();
+        List<Vector2I> temp_map_pos_list;
+        List<Vector2I> ret_map_pos_list = new List<Vector2I>();
+
+        var orig_map_position = TileMap.LocalToMap(current_player.Position);
+        anchor_map_pos_list.Add(orig_map_position);
+
+        GD.Print("Start For Loop");
+        for (int i = 0; i < current_player.ActionPoints; i++)
+        {
+            GD.Print("anchor_map_pos_list:");
+            for (int j = 0; j < anchor_map_pos_list.Count; j++)
+            {
+                GD.Print(anchor_map_pos_list[j]);
+            }
+
+            temp_map_pos_list = new List<Vector2I>();
+
+            GD.Print("Start For Loop 2");
+            foreach (Vector2I anchor_position in anchor_map_pos_list)
+            {
+                GD.Print(anchor_position);
+                temp_map_pos_list.AddRange(GetNeighbors(anchor_position));
+                ret_map_pos_list.AddRange(GetNeighbors(anchor_position));
+            }
+            GD.Print("End For Loop 2");
+
+            anchor_map_pos_list = temp_map_pos_list; // assign the new anchors
+        }
+        GD.Print("End For Loop");
+
+        GD.Print("HERE1");
+
+        ret_map_pos_list = RemoveDuplicatesFromList(ret_map_pos_list); // get rid of duplicates
+
+        return ret_map_pos_list;
+    }
+
+    //public List<Vector2I> MoveRange()
+    //{
+    //    List<Vector2I> map_pos_list = new List<Vector2I>();
+
+    //    var orig_map_position = TileMap.LocalToMap(current_player.Position);
+    //    Vector2I map_position = orig_map_position;
+    //    // in each direction, mark tiles that can be reached based on remaining action points
+    //    // TopLeftSide
+    //    for (int i = 0; i < current_player.ActionPoints; i++)
+    //    {
+    //        map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopLeftSide);
+    //        map_pos_list.Add(map_position);
+    //    }
+
+    //    // TopSide
+    //    map_position = orig_map_position;
+    //    for (int i = 0; i < current_player.ActionPoints; i++)
+    //    {
+    //        map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopSide);
+    //        map_pos_list.Add(map_position);
+    //    }
+
+    //    // TopRightSide
+    //    map_position = orig_map_position;
+    //    for (int i = 0; i < current_player.ActionPoints; i++)
+    //    {
+    //        map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopRightSide);
+    //        map_pos_list.Add(map_position);
+    //    }
+
+    //    // BottomRightSide
+    //    map_position = orig_map_position;
+    //    for (int i = 0; i < current_player.ActionPoints; i++)
+    //    {
+    //        map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomRightSide);
+    //        map_pos_list.Add(map_position);
+    //    }
+
+    //    // BottomSide
+    //    map_position = orig_map_position;
+    //    for (int i = 0; i < current_player.ActionPoints; i++)
+    //    {
+    //        map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomSide);
+    //        map_pos_list.Add(map_position);
+    //    }
+
+    //    // BottomLeftSide
+    //    map_position = orig_map_position;
+    //    for (int i = 0; i < current_player.ActionPoints; i++)
+    //    {
+    //        map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomLeftSide);
+    //        map_pos_list.Add(map_position);
+    //    }
+
+    //    return map_pos_list;
+    //}
 }
