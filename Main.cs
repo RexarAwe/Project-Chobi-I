@@ -10,6 +10,7 @@ public partial class Main : Node
     [Export]
     public PackedScene PlayerScene { get; set; }
     private List<Player> players = new List<Player>();
+    private List<Vector2I> allowed_move_positions = new List<Vector2I>();
     private Player current_player;
     private int current_player_idx;
     private bool start_round = false;
@@ -31,6 +32,22 @@ public partial class Main : Node
         // PlayTurn(); // needs a redesign, this should probably move to process, let every "signal" stuff be within this script, with actions and stuff coming from the player scripts
     }
 
+    private bool allowed_move()
+    {
+        //GD.Print("checking if legitimate move...");
+        if (allowed_move_positions.Contains(TileMap.LocalToMap(GetViewport().GetMousePosition())))
+        {
+            //foreach (Vector2I loc in allowed_move_positions)
+            //{
+            //    GD.Print(loc);
+            //}
+            //GD.Print(TileMap.LocalToMap(current_player.Position));
+            return true;
+        }
+
+        return false;
+    }
+
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
@@ -42,7 +59,7 @@ public partial class Main : Node
 
         if (Input.IsActionJustReleased("left_mouse_click"))
         {
-            if (current_player.Playing && round_ongoing)
+            if (current_player.Playing && round_ongoing && allowed_move())
             {
                 current_player.MovePlayer();
                 current_player.SetPlaying(false);
@@ -54,6 +71,7 @@ public partial class Main : Node
                 else
                 {
                     GD.Print("All players have played a turn.");
+                    TileMap.ClearLayer(1);
                     round_ongoing = false;
                 }
             }
@@ -98,11 +116,11 @@ public partial class Main : Node
         // MoveRange
 
         GD.Print("Move Range Position List: ");
-        List<Vector2I> move_positions = MoveRange();
-        for (int i = 0; i < move_positions.Count; i++)
+        allowed_move_positions = MoveRange();
+        for (int i = 0; i < allowed_move_positions.Count; i++)
         {
-            GD.Print("  " + move_positions[i]);
-            TileMap.SetCell(1, move_positions[i], atlus_source_id, atlus_coord, alternative_tile);
+            GD.Print("  " + allowed_move_positions[i]);
+            TileMap.SetCell(1, allowed_move_positions[i], atlus_source_id, atlus_coord, alternative_tile);
         }
 
         //GD.Print("TileMap.GetUsedCells(0): " + TileMap.GetUsedCells(0));
