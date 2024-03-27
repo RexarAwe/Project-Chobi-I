@@ -14,7 +14,7 @@ public partial class Main : Node
     private Player current_player;
     private int current_player_idx;
     private bool start_round = false;
-    private bool round_ongoing = false;
+    //private bool round_ongoing = false;
 
     [Signal]
     public delegate void DoneActionEventHandler();
@@ -28,8 +28,6 @@ public partial class Main : Node
         GD.Print(a.one());
 
         start_round = true;
-
-        // PlayTurn(); // needs a redesign, this should probably move to process, let every "signal" stuff be within this script, with actions and stuff coming from the player scripts
     }
 
     private bool allowed_move()
@@ -37,11 +35,6 @@ public partial class Main : Node
         //GD.Print("checking if legitimate move...");
         if (allowed_move_positions.Contains(TileMap.LocalToMap(GetViewport().GetMousePosition())))
         {
-            //foreach (Vector2I loc in allowed_move_positions)
-            //{
-            //    GD.Print(loc);
-            //}
-            //GD.Print(TileMap.LocalToMap(current_player.Position));
             return true;
         }
 
@@ -59,20 +52,33 @@ public partial class Main : Node
 
         if (Input.IsActionJustReleased("left_mouse_click"))
         {
-            if (current_player.Playing && round_ongoing && allowed_move())
+            //if (current_player.Playing && round_ongoing && allowed_move())
+            if (current_player.Playing && allowed_move())
             {
                 current_player.MovePlayer();
-                current_player.SetPlaying(false);
+                current_player.SetActionPoints(current_player.ActionPoints - 1);
+                GD.Print("current_player.ActionPoints: " + current_player.ActionPoints);
 
-                if (current_player_idx < players.Count)
+                if (current_player.ActionPoints == 0)
                 {
-                    PlayTurn(); // play next player
+                    current_player.SetPlaying(false);
+
+                    if (current_player_idx < players.Count)
+                    {
+                        PlayTurn(); // play next player
+                    }
+                    else
+                    {
+                        GD.Print("All players have played a turn.");
+                        TileMap.ClearLayer(1);
+                        //round_ongoing = false;
+                        StartRound();
+                    }
                 }
                 else
                 {
-                    GD.Print("All players have played a turn.");
-                    TileMap.ClearLayer(1);
-                    round_ongoing = false;
+                    // do i need this?
+                    PerformAction();
                 }
             }
         }
@@ -87,121 +93,61 @@ public partial class Main : Node
 
     public void StartRound()
     {
-        GD.Print("StartRound");
+        GD.Print("Starting Round");
         CollectPlayers();
         CheckPlayers();
         ShufflePlayersList();
         CheckPlayers();
-        round_ongoing = true;
+        //round_ongoing = true;
         current_player_idx = 0;
+        ResetActionPoints();
         PlayTurn(); // play first turn
     }
 
     public void PlayTurn()
+    {
+        // setup next player index
+        current_player = players[current_player_idx];
+        GD.Print("Playing " + current_player.ID + "'s Turn");
+        current_player.SetPlaying(true);
+        current_player_idx++;
+
+        GD.Print("remaining action points: " + current_player.ActionPoints);
+        PerformAction();
+
+        
+    }
+
+    public void PerformAction()
+    {
+        // deduct action point based on action performed
+
+        Move();
+    }
+
+    public void Move()
     {
         // define the movement range tile
         int atlus_source_id = 2;
         Vector2I atlus_coord = new Vector2I(0, 0);
         int alternative_tile = 0;
 
-        current_player = players[current_player_idx];
-        GD.Print("Playing " + current_player.ID + "'s Turn");
-        // player.PlayTurn();
-        current_player.SetPlaying(true);
-        current_player_idx++;
-
         // reset the movement tiles layer (1)
         TileMap.ClearLayer(1);
 
         // MoveRange
-
-        GD.Print("Move Range Position List: ");
         allowed_move_positions = MoveRange();
         for (int i = 0; i < allowed_move_positions.Count; i++)
         {
-            GD.Print("  " + allowed_move_positions[i]);
+            //GD.Print("  " + allowed_move_positions[i]);
             TileMap.SetCell(1, allowed_move_positions[i], atlus_source_id, atlus_coord, alternative_tile);
         }
-
-        //GD.Print("TileMap.GetUsedCells(0): " + TileMap.GetUsedCells(0));
-        //GD.Print("TileMap.GetUsedCells(1): " + TileMap.GetUsedCells(1));
-
-        // determine movement range
-
-        //var map_position = TileMap.LocalToMap(current_player.Position);
-        //GD.Print("Player at position: " + map_position);
-
-        ////Vector2I neighbor_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.LeftSide);
-        ////GD.Print("LeftSide: " + neighbor_position);
-        //Vector2I neighbor_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopLeftSide);
-        ////GD.Print("TopLeftSide: " + neighbor_position);
-        //TileMap.SetCell(1, neighbor_position, atlus_source_id, atlus_coord, alternative_tile);
-
-        //neighbor_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopSide);
-        ////GD.Print("TopSide: " + neighbor_position);
-        //TileMap.SetCell(1, neighbor_position, atlus_source_id, atlus_coord, alternative_tile);
-
-        //neighbor_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopRightSide);
-        ////GD.Print("TopRightSide: " + neighbor_position);
-        //TileMap.SetCell(1, neighbor_position, atlus_source_id, atlus_coord, alternative_tile);
-
-        ////neighbor_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.RightSide);
-        ////GD.Print("RightSide: " + neighbor_position);
-        //neighbor_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomRightSide);
-        ////GD.Print("BottomRightSide: " + neighbor_position);
-        //TileMap.SetCell(1, neighbor_position, atlus_source_id, atlus_coord, alternative_tile);
-
-        //neighbor_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomSide);
-        ////GD.Print("BottomSide: " + neighbor_position);
-        //TileMap.SetCell(1, neighbor_position, atlus_source_id, atlus_coord, alternative_tile);
-
-        //neighbor_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomLeftSide);
-        ////GD.Print("BottomLeftSide: " + neighbor_position);
-        //TileMap.SetCell(1, neighbor_position, atlus_source_id, atlus_coord, alternative_tile);
-
-
     }
 
     public void EndTurn()
     {
 
     }
-
-    //async public void PlayTurn()
-    //{
-    //    // grab the first player
-    //    Player player = players[0];
-    //    GD.Print(player.ID + "'s Turn");
-    //    player.PlayTurn(); 
-    //    await ToSignal(player, Player.SignalName.EndTurn); // need to wait for signal, otherwise it will just go to the next player
-    //    GD.Print(player.ID + "'s Turn Ended");
-
-    //    //player = players[1];
-    //    //GD.Print(player.ID + "'s Turn");
-    //    //player.PlayTurn();
-    //    //await ToSignal(player, Player.SignalName.EndTurn); // need to wait for signal, otherwise it will just go to the next player
-    //    //GD.Print(player.ID + "'s Turn Ended");
-
-    //    //player = players[2];
-    //    //GD.Print(player.ID + "'s Turn");
-    //    //player.PlayTurn();
-    //    //await ToSignal(player, Player.SignalName.EndTurn); // need to wait for signal, otherwise it will just go to the next player
-    //    //GD.Print(player.ID + "'s Turn Ended");
-
-    //    //// iterate through and assign action points to each player according to the shuffled order, and allow the player to play their turn
-    //    //foreach (Player player in players)
-    //    //{
-    //    //    GD.Print(player.ID + "'s Turn");
-
-    //    //    // deselect all existing players
-    //    //    GetTree().CallGroup("players", "SetPlaying", false);
-
-    //    //    // automatically select the current turn's player
-    //    //    player.PlayTurn();
-    //    //    await ToSignal(player, Player.SignalName.EndTurn);
-    //    //    GD.Print(player.ID + "'s Turn Ended");
-    //    //}
-    //}
 
     public List<T> RemoveDuplicatesFromList<T>(List<T> list)
     {
@@ -244,6 +190,14 @@ public partial class Main : Node
         }
 
         GD.Print("players.Count: " + players.Count);
+    }
+
+    private void ResetActionPoints()
+    {
+        foreach (Player player in players)
+        {
+            player.SetActionPoints(2);
+        }
     }
 
     private void ShufflePlayersList()
@@ -297,8 +251,6 @@ public partial class Main : Node
 
     public List<Vector2I> MoveRange()
     {
-        GD.Print("In MoveRange");
-
         List<Vector2I> anchor_map_pos_list = new List<Vector2I>();
         List<Vector2I> temp_map_pos_list;
         List<Vector2I> ret_map_pos_list = new List<Vector2I>();
@@ -306,91 +258,22 @@ public partial class Main : Node
         var orig_map_position = TileMap.LocalToMap(current_player.Position);
         anchor_map_pos_list.Add(orig_map_position);
 
-        GD.Print("Start For Loop");
-        for (int i = 0; i < current_player.ActionPoints; i++)
+        for (int i = 0; i < current_player.Speed; i++)
         {
-            GD.Print("anchor_map_pos_list:");
-            for (int j = 0; j < anchor_map_pos_list.Count; j++)
-            {
-                GD.Print(anchor_map_pos_list[j]);
-            }
-
             temp_map_pos_list = new List<Vector2I>();
 
-            GD.Print("Start For Loop 2");
             foreach (Vector2I anchor_position in anchor_map_pos_list)
             {
-                GD.Print(anchor_position);
                 temp_map_pos_list.AddRange(GetNeighbors(anchor_position));
                 ret_map_pos_list.AddRange(GetNeighbors(anchor_position));
             }
-            GD.Print("End For Loop 2");
 
             anchor_map_pos_list = temp_map_pos_list; // assign the new anchors
         }
-        GD.Print("End For Loop");
-
-        GD.Print("HERE1");
 
         ret_map_pos_list = RemoveDuplicatesFromList(ret_map_pos_list); // get rid of duplicates
 
         return ret_map_pos_list;
     }
 
-    //public List<Vector2I> MoveRange()
-    //{
-    //    List<Vector2I> map_pos_list = new List<Vector2I>();
-
-    //    var orig_map_position = TileMap.LocalToMap(current_player.Position);
-    //    Vector2I map_position = orig_map_position;
-    //    // in each direction, mark tiles that can be reached based on remaining action points
-    //    // TopLeftSide
-    //    for (int i = 0; i < current_player.ActionPoints; i++)
-    //    {
-    //        map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopLeftSide);
-    //        map_pos_list.Add(map_position);
-    //    }
-
-    //    // TopSide
-    //    map_position = orig_map_position;
-    //    for (int i = 0; i < current_player.ActionPoints; i++)
-    //    {
-    //        map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopSide);
-    //        map_pos_list.Add(map_position);
-    //    }
-
-    //    // TopRightSide
-    //    map_position = orig_map_position;
-    //    for (int i = 0; i < current_player.ActionPoints; i++)
-    //    {
-    //        map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.TopRightSide);
-    //        map_pos_list.Add(map_position);
-    //    }
-
-    //    // BottomRightSide
-    //    map_position = orig_map_position;
-    //    for (int i = 0; i < current_player.ActionPoints; i++)
-    //    {
-    //        map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomRightSide);
-    //        map_pos_list.Add(map_position);
-    //    }
-
-    //    // BottomSide
-    //    map_position = orig_map_position;
-    //    for (int i = 0; i < current_player.ActionPoints; i++)
-    //    {
-    //        map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomSide);
-    //        map_pos_list.Add(map_position);
-    //    }
-
-    //    // BottomLeftSide
-    //    map_position = orig_map_position;
-    //    for (int i = 0; i < current_player.ActionPoints; i++)
-    //    {
-    //        map_position = TileMap.GetNeighborCell(map_position, TileSet.CellNeighbor.BottomLeftSide);
-    //        map_pos_list.Add(map_position);
-    //    }
-
-    //    return map_pos_list;
-    //}
 }

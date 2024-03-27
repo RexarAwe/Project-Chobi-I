@@ -23,21 +23,22 @@ public partial class Player : Area2D
 
     private bool hovered = false;
     public bool Playing { get; set; } = false;
-    public int ActionPoints = 2;
+    public int ActionPoints { get; set; } = 2;
+    public int Speed { get; set; } = 2;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
-        GD.Print("Position: " + Position);
+        //GD.Print("Position: " + Position);
 
         TileMap = GetNode<TileMap>("../TileMap");
         SelectionBorderIndicator = GetNode<Sprite2D>("SelectionBorderIndicator");
         MovementRangeIndicator = GetNode<TileMap>("MoveRange");
 
         var map_position = TileMap.LocalToMap(Position);
-        GD.Print("Map Position: " + map_position);
+        //GD.Print("Map Position: " + map_position);
         var centered_position = TileMap.MapToLocal(map_position);
-        GD.Print("Centered Position: " + centered_position);
+        //GD.Print("Centered Position: " + centered_position);
 
         // center the position to the tilemap
         Position = centered_position;
