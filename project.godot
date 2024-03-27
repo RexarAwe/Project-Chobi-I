@@ -14,6 +14,11 @@ config/name="Project Chobi I"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
+[display]
+
+window/size/viewport_width=1200
+window/size/viewport_height=800
+
 [dotnet]
 
 project/assembly_name="Project Chobi I"
