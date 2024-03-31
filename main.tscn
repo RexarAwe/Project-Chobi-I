@@ -1,12 +1,20 @@
-[gd_scene load_steps=4 format=3 uid="uid://ckuyl34k6m82u"]
+[gd_scene load_steps=5 format=3 uid="uid://ckuyl34k6m82u"]
 
 [ext_resource type="PackedScene" uid="uid://d4imqu75qyqjt" path="res://tile_map.tscn" id="1_6fhrc"]
 [ext_resource type="Script" path="res://Main.cs" id="1_h7o1q"]
 [ext_resource type="PackedScene" uid="uid://bgvcdb44dq4c8" path="res://player.tscn" id="2_3yckp"]
+[ext_resource type="PackedScene" uid="uid://b2ebty8yhnduc" path="res://hud.tscn" id="3_qg3rs"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_h7o1q")
 PlayerScene = ExtResource("2_3yckp")
+CameraSpeed = 800
+
+[node name="camera" type="Camera2D" parent="."]
+position = Vector2(602, 375)
+
+[node name="HUD" parent="." instance=ExtResource("3_qg3rs")]
+visible = false
 
 [node name="TileMap" parent="." instance=ExtResource("1_6fhrc")]
 
@@ -18,3 +26,6 @@ position = Vector2(543, 316)
 
 [node name="Player3" parent="." instance=ExtResource("2_3yckp")]
 position = Vector2(156, 192)
+
+[connection signal="EndTurnActionSelected" from="HUD" to="." method="EndTurn"]
+[connection signal="MoveActionSelected" from="HUD" to="." method="Move"]

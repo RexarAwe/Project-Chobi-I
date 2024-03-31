@@ -4,3 +4,25 @@
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_wgi6b")
+
+[node name="MoveButton" type="Button" parent="."]
+offset_left = 115.0
+offset_top = 84.0
+offset_right = 123.0
+offset_bottom = 92.0
+text = "Move"
+
+[node name="EndTurnButton" type="Button" parent="."]
+offset_left = 216.0
+offset_top = 86.0
+offset_right = 294.0
+offset_bottom = 117.0
+text = "End Turn
+"
+
+[connection signal="mouse_entered" from="MoveButton" to="." method="OnMouseEnteredUI"]
+[connection signal="mouse_exited" from="MoveButton" to="." method="OnMouseExitedUI"]
+[connection signal="pressed" from="MoveButton" to="." method="OnMoveButtonPressed"]
+[connection signal="mouse_entered" from="EndTurnButton" to="." method="OnMouseEnteredUI"]
+[connection signal="mouse_exited" from="EndTurnButton" to="." method="OnMouseExitedUI"]
+[connection signal="pressed" from="EndTurnButton" to="." method="OnEndTurnButtonPressed"]
