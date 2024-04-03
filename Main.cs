@@ -40,6 +40,12 @@ public partial class Main : Node
         hud = GetNode<HUD>("HUD");
         camera = GetNode<Camera2D>("camera");
 
+        //GD.Print(camera.GetViewportRect().Size.X); // 1200
+        //GD.Print(camera.GetViewportRect().Size.Y); // 800
+
+        //GD.Print(TileMapSize.X * TileMap.TileSet.TileSize.X); // 2688
+        //GD.Print(TileMapSize.Y * TileMap.TileSet.TileSize.Y); // 1280
+
         start_round = true;
     }
 
@@ -67,6 +73,8 @@ public partial class Main : Node
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
+        //GD.Print(camera.Position.X + ", " + camera.Position.Y);
+
         Vector2 velocity = Vector2.Zero;
 
         // camera movement through wasd
@@ -101,8 +109,8 @@ public partial class Main : Node
         //    y: Mathf.Clamp(camera.Position.Y, 0 + (camera.GetViewportRect().Size.Y / 2), TileMapSize.Y * TileMap.TileSet.TileSize.Y - (camera.GetViewportRect().Size.Y / 2))
         //);
         camera.Position = new Vector2(
-            x: Mathf.Clamp(camera.Position.X, 0, (TileMapSize.X * TileMap.TileSet.TileSize.X)),
-            y: Mathf.Clamp(camera.Position.Y, 0, TileMapSize.Y * TileMap.TileSet.TileSize.Y)
+            x: Mathf.Clamp(camera.Position.X, (camera.GetViewportRect().Size.X / 2), 1900 - (camera.GetViewportRect().Size.X / 2)),
+            y: Mathf.Clamp(camera.Position.Y, (camera.GetViewportRect().Size.Y / 2), 1154 - (camera.GetViewportRect().Size.Y / 2))
         );
 
         if (start_round)
@@ -139,14 +147,16 @@ public partial class Main : Node
             GD.Print("mouse position from viewport: " + TileMap.LocalToMap(GetViewport().GetMousePosition()));
             GD.Print("mouse position from local: " + TileMap.LocalToMap(TileMap.GetLocalMousePosition()));
 
-            //get_local_mouse_position
-            
-
             //if (current_player.Playing && round_ongoing && allowed_move())
             if (current_player.Playing && allowed_move() && !hud.hovered_over_ui)
             {
                 current_player.MovePlayer();
                 current_player.SetActionPoints(current_player.ActionPoints - 1);
+
+                // reset move range
+                allowed_move_positions.Clear();
+                TileMap.ClearLayer(1);
+
                 GD.Print("current_player.ActionPoints: " + current_player.ActionPoints);
 
                 if (current_player.ActionPoints == 0)
