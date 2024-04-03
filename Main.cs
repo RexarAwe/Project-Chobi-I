@@ -9,11 +9,18 @@ public partial class Main : Node
 
     [Export]
     public PackedScene PlayerScene { get; set; }
+    [Export]
+    public int CameraSpeed { get; set; } = 400;
+
     private List<Player> players = new List<Player>();
     private List<Vector2I> allowed_move_positions = new List<Vector2I>();
     private Player current_player;
     private int current_player_idx;
     private bool start_round = false;
+    private HUD hud;
+    private Camera2D camera;
+    public Vector2 TileMapSize; // Size of the game window.
+
     //private bool round_ongoing = false;
 
     [Signal]
@@ -22,41 +29,134 @@ public partial class Main : Node
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
-        TileMap = GetNode<TileMap>("TileMap");        
+        TileMap = GetNode<TileMap>("TileMap");
+        TileMapSize = TileMap.GetUsedRect().Size;
+        //var UsedRect = TileMap.GetUsedRect();
+        //GD.Print("UsedRect: " + UsedRect);
 
         var a = new Class1(); // test custom nuget package
         GD.Print(a.one());
+
+        hud = GetNode<HUD>("HUD");
+        camera = GetNode<Camera2D>("camera");
+
+        //GD.Print(camera.GetViewportRect().Size.X); // 1200
+        //GD.Print(camera.GetViewportRect().Size.Y); // 800
+
+        //GD.Print(TileMapSize.X * TileMap.TileSet.TileSize.X); // 2688
+        //GD.Print(TileMapSize.Y * TileMap.TileSet.TileSize.Y); // 1280
 
         start_round = true;
     }
 
     private bool allowed_move()
     {
-        //GD.Print("checking if legitimate move...");
-        if (allowed_move_positions.Contains(TileMap.LocalToMap(GetViewport().GetMousePosition())))
+        GD.Print("checking if legitimate move...");
+        if (allowed_move_positions.Contains(TileMap.LocalToMap(TileMap.GetLocalMousePosition())))
         {
+            GD.Print("true");
             return true;
         }
 
+        GD.Print("allowed_move_positions");
+        for (int i = 0; i < allowed_move_positions.Count; i++)
+        {
+            GD.Print(allowed_move_positions[i]);
+        }
+        
+        GD.Print("mouse position");
+        GD.Print(TileMap.LocalToMap(TileMap.GetLocalMousePosition()));
+        GD.Print("false");
         return false;
     }
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
+        //GD.Print(camera.Position.X + ", " + camera.Position.Y);
+
+        Vector2 velocity = Vector2.Zero;
+
+        // camera movement through wasd
+        if (Input.IsActionPressed("camera_up"))
+        {
+            velocity.Y -= 1;
+        }
+
+        if (Input.IsActionPressed("camera_down"))
+        {
+            velocity.Y += 1;
+        }
+
+        if (Input.IsActionPressed("camera_left"))
+        {
+            velocity.X -= 1;
+        }
+
+        if (Input.IsActionPressed("camera_right"))
+        {
+            velocity.X += 1;
+        }
+
+        if (velocity.Length() > 0)
+        {
+            velocity = velocity.Normalized() * CameraSpeed;
+        }
+
+        camera.Position += velocity * (float)delta;
+        //camera.Position = new Vector2(
+        //    x: Mathf.Clamp(camera.Position.X, 0 + (camera.GetViewportRect().Size.X / 2), (TileMapSize.X * TileMap.TileSet.TileSize.X) - (camera.GetViewportRect().Size.X / 2)),
+        //    y: Mathf.Clamp(camera.Position.Y, 0 + (camera.GetViewportRect().Size.Y / 2), TileMapSize.Y * TileMap.TileSet.TileSize.Y - (camera.GetViewportRect().Size.Y / 2))
+        //);
+        camera.Position = new Vector2(
+            x: Mathf.Clamp(camera.Position.X, (camera.GetViewportRect().Size.X / 2), 1900 - (camera.GetViewportRect().Size.X / 2)),
+            y: Mathf.Clamp(camera.Position.Y, (camera.GetViewportRect().Size.Y / 2), 1154 - (camera.GetViewportRect().Size.Y / 2))
+        );
+
         if (start_round)
         {
             start_round = false; // play just one round
             StartRound();
         }
 
+        if (current_player.ActionPoints == 0)
+        {
+            current_player.SetPlaying(false);
+
+            if (current_player_idx < players.Count)
+            {
+                PlayTurn(); // play next player
+            }
+            else
+            {
+                GD.Print("All players have played a turn.");
+                TileMap.ClearLayer(1);
+                //round_ongoing = false;
+                StartRound();
+            }
+        }
+        else
+        {
+            // do i need this?
+            PerformAction();
+        }
+
         if (Input.IsActionJustReleased("left_mouse_click"))
         {
+            // for debug
+            GD.Print("mouse position from viewport: " + TileMap.LocalToMap(GetViewport().GetMousePosition()));
+            GD.Print("mouse position from local: " + TileMap.LocalToMap(TileMap.GetLocalMousePosition()));
+
             //if (current_player.Playing && round_ongoing && allowed_move())
-            if (current_player.Playing && allowed_move())
+            if (current_player.Playing && allowed_move() && !hud.hovered_over_ui)
             {
                 current_player.MovePlayer();
                 current_player.SetActionPoints(current_player.ActionPoints - 1);
+
+                // reset move range
+                allowed_move_positions.Clear();
+                TileMap.ClearLayer(1);
+
                 GD.Print("current_player.ActionPoints: " + current_player.ActionPoints);
 
                 if (current_player.ActionPoints == 0)
@@ -82,13 +182,6 @@ public partial class Main : Node
                 }
             }
         }
-
-        if (Input.IsActionJustReleased("end_turn"))
-        {
-            //GD.Print("End Turn Button Pressed");
-            //EmitSignal(SignalName.TurnEnd);
-            //GD.Print("Emitted TurnEnd Signal");
-        }
     }
 
     public void StartRound()
@@ -113,16 +206,19 @@ public partial class Main : Node
         current_player_idx++;
 
         GD.Print("remaining action points: " + current_player.ActionPoints);
-        PerformAction();
+        ////PerformAction();
 
         
     }
 
     public void PerformAction()
     {
+        // enable the action buttons
+        hud.Visible = true;
+
         // deduct action point based on action performed
 
-        Move();
+        //Move();
     }
 
     public void Move()
@@ -146,7 +242,8 @@ public partial class Main : Node
 
     public void EndTurn()
     {
-
+        current_player.ActionPoints = 0;
+        GetNode<HUD>("HUD").Visible = false;
     }
 
     public List<T> RemoveDuplicatesFromList<T>(List<T> list)
