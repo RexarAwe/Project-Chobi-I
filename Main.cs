@@ -52,7 +52,27 @@ public partial class Main : Node
     private bool allowed_move()
     {
         GD.Print("checking if legitimate move...");
-        if (allowed_move_positions.Contains(TileMap.LocalToMap(TileMap.GetLocalMousePosition())))
+
+        // get locations of all other players
+        List<Vector2I> player_positions = new List<Vector2I>();
+        GD.Print("players cnt: " + players.Count);
+        GD.Print("player positions:");
+        foreach (Player player in players)
+        {
+            GD.Print("HERE");
+            GD.Print(player.ID);
+            GD.Print(current_player.ID);
+
+            if (player.ID != current_player.ID)
+            {
+                player_positions.Add(TileMap.LocalToMap(player.Position));
+                GD.Print(TileMap.LocalToMap(player.Position));
+            }
+        } 
+
+        var target_position = TileMap.LocalToMap(TileMap.GetLocalMousePosition());
+        GD.Print("target_position: " + target_position);
+        if (allowed_move_positions.Contains(target_position) && !player_positions.Contains(target_position))
         {
             GD.Print("true");
             return true;

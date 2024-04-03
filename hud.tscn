@@ -6,19 +6,48 @@
 script = ExtResource("1_wgi6b")
 
 [node name="MoveButton" type="Button" parent="."]
-offset_left = 115.0
-offset_top = 84.0
-offset_right = 123.0
-offset_bottom = 92.0
+offset_left = 131.0
+offset_top = 85.0
+offset_right = 182.0
+offset_bottom = 116.0
 text = "Move"
 
 [node name="EndTurnButton" type="Button" parent="."]
-offset_left = 216.0
-offset_top = 86.0
-offset_right = 294.0
-offset_bottom = 117.0
+offset_left = 198.0
+offset_top = 85.0
+offset_right = 276.0
+offset_bottom = 116.0
 text = "End Turn
 "
+
+[node name="MeleeAttackButton" type="Button" parent="."]
+offset_left = 290.0
+offset_top = 85.0
+offset_right = 376.0
+offset_bottom = 116.0
+text = "Melee Atk"
+
+[node name="RangedAttackButton" type="Button" parent="."]
+offset_left = 393.0
+offset_top = 85.0
+offset_right = 489.0
+offset_bottom = 116.0
+text = "Ranged Atk
+"
+
+[node name="PrayButton" type="Button" parent="."]
+offset_left = 510.0
+offset_top = 86.0
+offset_right = 553.0
+offset_bottom = 117.0
+text = "Pray"
+
+[node name="RitualButton" type="Button" parent="."]
+offset_left = 575.0
+offset_top = 88.0
+offset_right = 628.0
+offset_bottom = 119.0
+text = "Ritual"
 
 [connection signal="mouse_entered" from="MoveButton" to="." method="OnMouseEnteredUI"]
 [connection signal="mouse_exited" from="MoveButton" to="." method="OnMouseExitedUI"]
