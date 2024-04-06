@@ -7,6 +7,14 @@ public partial class HUD : CanvasLayer
     public delegate void MoveActionSelectedEventHandler();
     [Signal]
     public delegate void EndTurnActionSelectedEventHandler();
+    [Signal]
+    public delegate void MeleeAttackActionSelectedEventHandler();
+    [Signal]
+    public delegate void RangedAttackActionSelectedEventHandler();
+    [Signal]
+    public delegate void PrayActionSelectedEventHandler();
+    [Signal]
+    public delegate void RitualActionSelectedEventHandler();
 
     public bool hovered_over_ui;
 
@@ -32,6 +40,30 @@ public partial class HUD : CanvasLayer
         //GetNode<Button>("StartButton").Hide();
         EmitSignal(SignalName.EndTurnActionSelected);
         GD.Print("End Turn Action Selected");
+    }
+
+    private void OnMeleeAttackButtonPressed()
+    {
+        EmitSignal(SignalName.MeleeAttackActionSelected);
+        GD.Print("Melee Attack Action Selected");
+    }
+
+    private void OnRangedAttackButtonPressed()
+    {
+        EmitSignal(SignalName.RangedAttackActionSelected);
+        GD.Print("Ranged Attack Action Selected");
+    }
+
+    private void OnPrayButtonPressed()
+    {
+        EmitSignal(SignalName.PrayActionSelected);
+        GD.Print("Pray Action Selected");
+    }
+
+    private void OnRitualButtonPressed()
+    {
+        EmitSignal(SignalName.RitualActionSelected);
+        GD.Print("Ritual Action Selected");
     }
 
     public void OnMouseEnteredUI()
