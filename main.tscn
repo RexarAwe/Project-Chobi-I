@@ -28,4 +28,8 @@ position = Vector2(543, 316)
 position = Vector2(156, 192)
 
 [connection signal="EndTurnActionSelected" from="HUD" to="." method="EndTurn"]
+[connection signal="MeleeAttackActionSelected" from="HUD" to="." method="MeleeAttack"]
 [connection signal="MoveActionSelected" from="HUD" to="." method="Move"]
+[connection signal="PrayActionSelected" from="HUD" to="." method="Pray"]
+[connection signal="RangedAttackActionSelected" from="HUD" to="." method="RangedAttack"]
+[connection signal="RitualActionSelected" from="HUD" to="." method="Ritual"]

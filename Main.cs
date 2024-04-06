@@ -14,11 +14,19 @@ public partial class Main : Node
 
     private List<Player> players = new List<Player>();
     private List<Vector2I> allowed_move_positions = new List<Vector2I>();
+    private List<Vector2I> allowed_attack_positions = new List<Vector2I>();
     private Player current_player;
     private int current_player_idx;
     private bool start_round = false;
     private HUD hud;
     private Camera2D camera;
+
+    private bool moving = false;
+    private bool melee_attacking = false;
+    private bool ranged_attacking = false;
+    private bool praying = false;
+    private bool ritualing = false;
+
     public Vector2 TileMapSize; // Size of the game window.
 
     //private bool round_ongoing = false;
@@ -49,19 +57,20 @@ public partial class Main : Node
         start_round = true;
     }
 
+    // this should be in move rather than a separate function
     private bool allowed_move()
     {
         GD.Print("checking if legitimate move...");
 
         // get locations of all other players
         List<Vector2I> player_positions = new List<Vector2I>();
-        GD.Print("players cnt: " + players.Count);
-        GD.Print("player positions:");
+        //GD.Print("players cnt: " + players.Count);
+        //GD.Print("player positions:");
         foreach (Player player in players)
         {
-            GD.Print("HERE");
-            GD.Print(player.ID);
-            GD.Print(current_player.ID);
+            //GD.Print("HERE");
+            //GD.Print(player.ID);
+            //GD.Print(current_player.ID);
 
             if (player.ID != current_player.ID)
             {
@@ -71,22 +80,22 @@ public partial class Main : Node
         } 
 
         var target_position = TileMap.LocalToMap(TileMap.GetLocalMousePosition());
-        GD.Print("target_position: " + target_position);
+        //GD.Print("target_position: " + target_position);
         if (allowed_move_positions.Contains(target_position) && !player_positions.Contains(target_position))
         {
-            GD.Print("true");
+            //GD.Print("true");
             return true;
         }
 
-        GD.Print("allowed_move_positions");
-        for (int i = 0; i < allowed_move_positions.Count; i++)
-        {
-            GD.Print(allowed_move_positions[i]);
-        }
+        //GD.Print("allowed_move_positions");
+        //for (int i = 0; i < allowed_move_positions.Count; i++)
+        //{
+        //    GD.Print(allowed_move_positions[i]);
+        //}
         
-        GD.Print("mouse position");
-        GD.Print(TileMap.LocalToMap(TileMap.GetLocalMousePosition()));
-        GD.Print("false");
+        //GD.Print("mouse position");
+        //GD.Print(TileMap.LocalToMap(TileMap.GetLocalMousePosition()));
+        //GD.Print("false");
         return false;
     }
 
@@ -124,10 +133,6 @@ public partial class Main : Node
         }
 
         camera.Position += velocity * (float)delta;
-        //camera.Position = new Vector2(
-        //    x: Mathf.Clamp(camera.Position.X, 0 + (camera.GetViewportRect().Size.X / 2), (TileMapSize.X * TileMap.TileSet.TileSize.X) - (camera.GetViewportRect().Size.X / 2)),
-        //    y: Mathf.Clamp(camera.Position.Y, 0 + (camera.GetViewportRect().Size.Y / 2), TileMapSize.Y * TileMap.TileSet.TileSize.Y - (camera.GetViewportRect().Size.Y / 2))
-        //);
         camera.Position = new Vector2(
             x: Mathf.Clamp(camera.Position.X, (camera.GetViewportRect().Size.X / 2), 1900 - (camera.GetViewportRect().Size.X / 2)),
             y: Mathf.Clamp(camera.Position.Y, (camera.GetViewportRect().Size.Y / 2), 1154 - (camera.GetViewportRect().Size.Y / 2))
@@ -145,7 +150,7 @@ public partial class Main : Node
 
             if (current_player_idx < players.Count)
             {
-                PlayTurn(); // play next player
+                PlayTurn(); // next player plays turn
             }
             else
             {
@@ -161,6 +166,7 @@ public partial class Main : Node
             PerformAction();
         }
 
+        // for move only right now, better way to do this? move button -> set flag to prepare for this, right now it doesn't check? TODO
         if (Input.IsActionJustReleased("left_mouse_click"))
         {
             // for debug
@@ -168,8 +174,10 @@ public partial class Main : Node
             GD.Print("mouse position from local: " + TileMap.LocalToMap(TileMap.GetLocalMousePosition()));
 
             //if (current_player.Playing && round_ongoing && allowed_move())
-            if (current_player.Playing && allowed_move() && !hud.hovered_over_ui)
+            if (current_player.Playing && moving && allowed_move() && !hud.hovered_over_ui)
             {
+                moving = false;
+
                 current_player.MovePlayer();
                 current_player.SetActionPoints(current_player.ActionPoints - 1);
 
@@ -178,28 +186,45 @@ public partial class Main : Node
                 TileMap.ClearLayer(1);
 
                 GD.Print("current_player.ActionPoints: " + current_player.ActionPoints);
+            }
 
-                if (current_player.ActionPoints == 0)
+            if (current_player.Playing && melee_attacking && !hud.hovered_over_ui)
+            {
+                // do the melee attack stuff here
+
+                // determine the target
+
+                // roll for the attack and defense
+
+                // hp change if necessary
+
+                melee_attacking = false;
+                current_player.SetActionPoints(current_player.ActionPoints - 1);
+
+                allowed_attack_positions.Clear();
+                TileMap.ClearLayer(1);
+            }
+
+            if (current_player.ActionPoints == 0)
+            {
+                current_player.SetPlaying(false);
+
+                if (current_player_idx < players.Count)
                 {
-                    current_player.SetPlaying(false);
-
-                    if (current_player_idx < players.Count)
-                    {
-                        PlayTurn(); // play next player
-                    }
-                    else
-                    {
-                        GD.Print("All players have played a turn.");
-                        TileMap.ClearLayer(1);
-                        //round_ongoing = false;
-                        StartRound();
-                    }
+                    PlayTurn(); // play next player
                 }
                 else
                 {
-                    // do i need this?
-                    PerformAction();
+                    GD.Print("All players have played a turn.");
+                    TileMap.ClearLayer(1);
+                    //round_ongoing = false;
+                    StartRound();
                 }
+            }
+            else
+            {
+                // do i need this?
+                PerformAction();
             }
         }
     }
@@ -217,6 +242,7 @@ public partial class Main : Node
         PlayTurn(); // play first turn
     }
 
+    // let the next player play their turn
     public void PlayTurn()
     {
         // setup next player index
@@ -243,6 +269,10 @@ public partial class Main : Node
 
     public void Move()
     {
+        moving = true;
+
+        //GD.Print("MOVE!");
+
         // define the movement range tile
         int atlus_source_id = 2;
         Vector2I atlus_coord = new Vector2I(0, 0);
@@ -258,6 +288,46 @@ public partial class Main : Node
             //GD.Print("  " + allowed_move_positions[i]);
             TileMap.SetCell(1, allowed_move_positions[i], atlus_source_id, atlus_coord, alternative_tile);
         }
+    }
+
+    public void MeleeAttack()
+    {
+        // check for any valid targets
+        allowed_attack_positions = MeleeAttackRange();
+
+        if (allowed_attack_positions.Count > 0) 
+        {
+            melee_attacking = true;
+
+            int atlus_source_id = 6;
+            Vector2I atlus_coord = new Vector2I(0, 0);
+            int alternative_tile = 0;
+
+            for (int i = 0; i < allowed_attack_positions.Count; i++)
+            {
+                //GD.Print("  " + allowed_move_positions[i]);
+                TileMap.SetCell(1, allowed_attack_positions[i], atlus_source_id, atlus_coord, alternative_tile);
+            }
+        }
+        else
+        {
+            GD.Print("No Valid Melee Attack Targets");
+        }
+    }
+
+    public void RangedAttack()
+    {
+        ranged_attacking = true;
+    }
+
+    public void Pray()
+    {
+        praying = true;
+    }
+
+    public void Ritual()
+    {
+        ritualing = true;
     }
 
     public void EndTurn()
@@ -393,4 +463,55 @@ public partial class Main : Node
         return ret_map_pos_list;
     }
 
+    public List<Vector2I> MeleeAttackRange()
+    {
+        GD.Print("In MeleeAttackRange");
+        //current_player.MeleeAttackRange;
+
+        List<Vector2I> anchor_map_pos_list = new List<Vector2I>();
+        List<Vector2I> temp_map_pos_list;
+        List<Vector2I> within_range_list = new List<Vector2I>();
+
+        var orig_map_position = TileMap.LocalToMap(current_player.Position);
+        anchor_map_pos_list.Add(orig_map_position);
+
+        // check if any other player within melee attack range
+        for (int i = 0; i < current_player.MeleeAttackRange; i++)
+        {
+            temp_map_pos_list = new List<Vector2I>();
+
+            foreach (Vector2I anchor_position in anchor_map_pos_list)
+            {
+                temp_map_pos_list.AddRange(GetNeighbors(anchor_position));
+                within_range_list.AddRange(GetNeighbors(anchor_position));
+            }
+
+            anchor_map_pos_list = temp_map_pos_list; // assign the new anchors
+        }
+
+        within_range_list = RemoveDuplicatesFromList(within_range_list); // get rid of duplicates
+
+        GD.Print("within_range_list: ");
+        for (int i = 0; i < within_range_list.Count; i++)
+        {
+            GD.Print(within_range_list[i]);
+        }
+
+        // check if any player positions are within this range, if not, remove it from the list
+        List<Vector2I> target_tile_list = new List<Vector2I>();
+        foreach (Player player in players)
+        {
+            if (player.ID != current_player.ID)
+            {
+                GD.Print(player.ID);
+                GD.Print(player.TilePosition);
+                if (within_range_list.Contains((Vector2I)player.TilePosition))
+                {
+                    target_tile_list.Add((Vector2I)player.TilePosition);
+                }
+            }
+        }
+
+        return target_tile_list;
+    }
 }
