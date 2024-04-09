@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\Gavin\\Documents\\godot projects\\Project Chobi I\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{0C9683C2-D540-4643-9CF9-D969B19AAFD0}|Project Chobi I.csproj|c:\\users\\gavin\\documents\\godot projects\\project chobi i\\main.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0C9683C2-D540-4643-9CF9-D969B19AAFD0}|Project Chobi I.csproj|solutionrelative:main.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{0C9683C2-D540-4643-9CF9-D969B19AAFD0}|Project Chobi I.csproj|c:\\users\\gavin\\documents\\godot projects\\project chobi i\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0C9683C2-D540-4643-9CF9-D969B19AAFD0}|Project Chobi I.csproj|solutionrelative:player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C9683C2-D540-4643-9CF9-D969B19AAFD0}|Project Chobi I.csproj|c:\\users\\gavin\\documents\\godot projects\\project chobi i\\main.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0C9683C2-D540-4643-9CF9-D969B19AAFD0}|Project Chobi I.csproj|solutionrelative:main.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0C9683C2-D540-4643-9CF9-D969B19AAFD0}|Project Chobi I.csproj|c:\\users\\gavin\\documents\\godot projects\\project chobi i\\hud.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -26,7 +26,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
@@ -42,13 +42,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Main.cs",
               "DocumentMoniker": "C:\\Users\\Gavin\\Documents\\godot projects\\Project Chobi I\\Main.cs",
               "RelativeDocumentMoniker": "Main.cs",
               "ToolTip": "C:\\Users\\Gavin\\Documents\\godot projects\\Project Chobi I\\Main.cs",
               "RelativeToolTip": "Main.cs",
-              "ViewState": "AQIAAMcAAAAAAAAAAAAIwNgAAAARAAAA",
+              "ViewState": "AQIAAPoAAAAAAAAAAAD4vwkBAAAnAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-03-11T13:07:27.96Z",
               "EditorCaption": ""
@@ -68,13 +68,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "Player.cs",
               "DocumentMoniker": "C:\\Users\\Gavin\\Documents\\godot projects\\Project Chobi I\\Player.cs",
               "RelativeDocumentMoniker": "Player.cs",
               "ToolTip": "C:\\Users\\Gavin\\Documents\\godot projects\\Project Chobi I\\Player.cs",
               "RelativeToolTip": "Player.cs",
-              "ViewState": "AQIAAJoAAAAAAAAAAAAUwLYAAAA0AAAA",
+              "ViewState": "AQIAALEAAAAAAAAAAAAjwL4AAAA7AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-03-08T12:13:31.592Z",
               "EditorCaption": ""

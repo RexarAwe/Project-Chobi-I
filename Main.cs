@@ -1,8 +1,8 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using statemachine; 
-
+using statemachine;
+using GodotPlugins.Game;
 public partial class Main : Node
 {
     private TileMap TileMap;
@@ -28,6 +28,7 @@ public partial class Main : Node
     private bool ritualing = false;
 
     public Vector2 TileMapSize; // Size of the game window.
+    private Random random = new Random();
 
     //private bool round_ongoing = false;
 
@@ -193,10 +194,25 @@ public partial class Main : Node
                 // do the melee attack stuff here
 
                 // determine the target
+                Player target = null;
+                foreach (Player player in players)
+                {
+                    if (player.ID != current_player.ID)
+                    {
+                        if (player.TilePosition == TileMap.LocalToMap(TileMap.GetLocalMousePosition()))
+                        {
+                            // found target
+                            GD.Print("player " + player.ID + " targeted");
+                            target = player;
+                        }
+                    }
+                }
 
                 // roll for the attack and defense
-
-                // hp change if necessary
+                if (AttackRoll(current_player.Strength, target.Defense))
+                {
+                    target.Health -= current_player.MeleeDamage;
+                }
 
                 melee_attacking = false;
                 current_player.SetActionPoints(current_player.ActionPoints - 1);
@@ -226,6 +242,50 @@ public partial class Main : Node
                 // do i need this?
                 PerformAction();
             }
+        }
+    }
+
+    private int RollDie(int sides)
+    {
+        return random.Next(sides + 1);
+    }
+
+    private bool AttackRoll(int stat_str, int stat_def)
+    {
+        GD.Print("ATTACKING");
+
+        int max_val_stat_str = 0;
+        int max_val_stat_def = 0;
+        int val = -1;
+
+        for (int i = 0; i < stat_str; i++)
+        {
+            val = RollDie(10);
+            if (val > max_val_stat_str) // played with d10s
+            {
+                max_val_stat_str = val;
+            }
+        }
+
+        for (int i = 0; i < stat_def; i++)
+        {
+            val = RollDie(10);
+            if (val > max_val_stat_def) // played with d10s
+            {
+                max_val_stat_def = val;
+            }
+        }
+
+        GD.Print("max_val_stat_str: " + max_val_stat_str);
+        GD.Print("max_val_stat_def: " + max_val_stat_def);
+
+        if (max_val_stat_str >= max_val_stat_def)
+        {
+            return true; // attacker hits
+        }
+        else
+        {
+            return false; // nothing happens
         }
     }
 
