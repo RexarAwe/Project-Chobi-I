@@ -28,8 +28,11 @@ public partial class Player : Area2D
 
     public int Strength {  get; set; } = 1;
     public int Defense { get; set; } = 1;
-    public int Health { get; set; } = 1;
+    public int Health { get; set; } = 5;
     public int MeleeAttackRange {  get; set; } = 1;
+    public int MeleeDamage {  get; set; } = 1;
+    public int RangedAttackRange { get; set; } = 1;
+    public int RangedDamage { get; set; } = 1;
 
     public Vector2I TilePosition { get; set; }
 
@@ -185,7 +188,8 @@ public partial class Player : Area2D
 
     public void OnMouseEntered()
     {
-        GD.Print("Player ID: " + ID);
+        GD.Print("Player ID: " + ID + "; Health: " + Health);
+        GD.Print();
         hovered = true;
     }
 
