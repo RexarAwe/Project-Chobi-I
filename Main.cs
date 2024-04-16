@@ -73,7 +73,7 @@ public partial class Main : Node
             //GD.Print(player.ID);
             //GD.Print(current_player.ID);
 
-            if (player.ID != current_player.ID)
+            if (player.ID != current_player.ID && player.dead == false)
             {
                 player_positions.Add(TileMap.LocalToMap(player.Position));
                 GD.Print(TileMap.LocalToMap(player.Position));
@@ -212,6 +212,13 @@ public partial class Main : Node
                 if (AttackRoll(current_player.Strength, target.Defense))
                 {
                     target.Health -= current_player.MeleeDamage;
+
+                    if (target.Health <= 0) 
+                    {
+                        target.Destroy();
+                        // adjust player list // TODO
+                        // or just when going to next player turn, check if already dead, if so, go to the next and so on
+                    }
                 }
 
                 melee_attacking = false;
@@ -303,19 +310,110 @@ public partial class Main : Node
     }
 
     // let the next player play their turn
+    //public void PlayTurn()
+    //{
+    //    // setup next player index
+    //    current_player = players[current_player_idx];
+
+    //    GD.Print("Playing " + current_player.ID + "'s Turn");
+    //    current_player.SetPlaying(true);
+    //    current_player_idx++;
+
+    //    GD.Print("remaining action points: " + current_player.ActionPoints);
+    //    //PerformAction();
+    //}
+
     public void PlayTurn()
     {
+        GD.Print("current_player_idx: " + current_player_idx);
+        GD.Print("players.Count: " + players.Count);
+
         // setup next player index
-        current_player = players[current_player_idx];
-        GD.Print("Playing " + current_player.ID + "'s Turn");
-        current_player.SetPlaying(true);
-        current_player_idx++;
+        if (current_player_idx < players.Count)
+        {
+            current_player = players[current_player_idx];
 
-        GD.Print("remaining action points: " + current_player.ActionPoints);
-        ////PerformAction();
+            // skip players that were killed before their turns
+            while (current_player.dead)
+            {
+                GD.Print("dead loop: current_player.ID: " + current_player.ID);
+                current_player_idx++;
+                if (current_player_idx < players.Count)
+                {
+                    current_player = players[current_player_idx];
+                }
+                else
+                {
+                    break;
+                }
+            }
 
-        
+            if (current_player_idx < players.Count)
+            {
+                
+                GD.Print("Playing " + current_player.ID + "'s Turn");
+                current_player.SetPlaying(true);
+                current_player_idx++;
+
+                GD.Print("remaining action points: " + current_player.ActionPoints);
+                ////PerformAction();
+            }
+            else
+            {
+                GD.Print("All players have played a turn. Starting new round.");
+                TileMap.ClearLayer(1);
+                //round_ongoing = false;
+                StartRound();
+            }
+        }
+        else
+        {
+            GD.Print("All players have played a turn. Starting new round.");
+            TileMap.ClearLayer(1);
+            //round_ongoing = false;
+            StartRound();
+        }
     }
+
+    //public void PlayTurn()
+    //{
+    //    if (current_player_idx >= players.Count)
+    //    {
+    //        GD.Print("All players have played a turn. Starting new round.");
+    //        TileMap.ClearLayer(1);
+    //        //round_ongoing = false;
+    //        StartRound();
+    //    }
+    //    else
+    //    {
+    //        // setup next player index
+    //        current_player = players[current_player_idx];
+
+    //        // skip players that were killed before their turns
+    //        while (current_player.dead && current_player_idx < players.Count)
+    //        {
+    //            current_player_idx++;
+    //            current_player = players[current_player_idx];
+    //        }
+
+    //        if (current_player_idx < players.Count)
+    //        {
+    //            GD.Print("Playing " + current_player.ID + "'s Turn");
+    //            current_player.SetPlaying(true);
+    //            current_player_idx++;
+
+    //            GD.Print("remaining action points: " + current_player.ActionPoints);
+    //            ////PerformAction();
+    //        }
+    //        else
+    //        {
+    //            GD.Print("All players have played a turn. Starting new round.");
+    //            TileMap.ClearLayer(1);
+    //            //round_ongoing = false;
+    //            StartRound();
+    //        }
+    //    }
+    //}
 
     public void PerformAction()
     {
@@ -329,6 +427,8 @@ public partial class Main : Node
 
     public void Move()
     {
+        GD.Print("Move");
+
         moving = true;
 
         //GD.Print("MOVE!");
@@ -352,8 +452,11 @@ public partial class Main : Node
 
     public void MeleeAttack()
     {
+        GD.Print("MeleeAttack");
         // check for any valid targets
         allowed_attack_positions = MeleeAttackRange();
+
+        GD.Print("allowed_attack_positions count: " + allowed_attack_positions.Count);
 
         if (allowed_attack_positions.Count > 0) 
         {
@@ -429,10 +532,13 @@ public partial class Main : Node
             // Check if the child has the PlayerScript attached
             if (child is Player player)
             {
-                player.ID = id;
-                id++;
-                // Add the player to the list
-                players.Add(player);
+                if (player.dead == false)
+                {
+                    player.ID = id;
+                    id++;
+                    // Add the player to the list
+                    players.Add(player);
+                }
             }
         }
 
@@ -498,6 +604,8 @@ public partial class Main : Node
 
     public List<Vector2I> MoveRange()
     {
+        GD.Print("MoveRange");
+
         List<Vector2I> anchor_map_pos_list = new List<Vector2I>();
         List<Vector2I> temp_map_pos_list;
         List<Vector2I> ret_map_pos_list = new List<Vector2I>();
@@ -525,7 +633,7 @@ public partial class Main : Node
 
     public List<Vector2I> MeleeAttackRange()
     {
-        GD.Print("In MeleeAttackRange");
+        GD.Print("MeleeAttackRange");
         //current_player.MeleeAttackRange;
 
         List<Vector2I> anchor_map_pos_list = new List<Vector2I>();
@@ -561,7 +669,7 @@ public partial class Main : Node
         List<Vector2I> target_tile_list = new List<Vector2I>();
         foreach (Player player in players)
         {
-            if (player.ID != current_player.ID)
+            if (player.ID != current_player.ID && player.dead == false)
             {
                 GD.Print(player.ID);
                 GD.Print(player.TilePosition);
