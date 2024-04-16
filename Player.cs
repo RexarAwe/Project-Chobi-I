@@ -23,16 +23,18 @@ public partial class Player : Area2D
 
     private bool hovered = false;
     public bool Playing { get; set; } = false;
+    public bool dead {  get; set; } = false;
     public int ActionPoints { get; set; } = 2;
     public int Speed { get; set; } = 2;
 
     public int Strength {  get; set; } = 1;
     public int Defense { get; set; } = 1;
-    public int Health { get; set; } = 5;
+    public int Health { get; set; } = 1;
     public int MeleeAttackRange {  get; set; } = 1;
     public int MeleeDamage {  get; set; } = 1;
     public int RangedAttackRange { get; set; } = 1;
     public int RangedDamage { get; set; } = 1;
+    public int team_no { get; set; } = -1;
 
     public Vector2I TilePosition { get; set; }
 
@@ -196,5 +198,11 @@ public partial class Player : Area2D
     public void OnMouseExited()
     {
         hovered = false;
+    }
+
+    public void Destroy()
+    {
+        dead = true;
+        Hide(); // maybe just change to grave sprite instead of hiding
     }
 }
