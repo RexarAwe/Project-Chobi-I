@@ -298,7 +298,19 @@ public partial class Main : Node
 
     public void StartRound()
     {
-        GD.Print("Starting Round");
+        //GD.Print("Setting up the round");
+        //// set up the round
+        //Player player = PlayerScene.Instantiate<Player>();
+        //// determine player starting spots and team allocations
+        //AddChild(player);
+
+        // create characters and set up position for each team
+
+
+        GD.Print("Starting the round");
+
+        
+
         CollectPlayers();
         CheckPlayers();
         ShufflePlayersList();
@@ -669,7 +681,7 @@ public partial class Main : Node
         List<Vector2I> target_tile_list = new List<Vector2I>();
         foreach (Player player in players)
         {
-            if (player.ID != current_player.ID && player.dead == false)
+            if (player.ID != current_player.ID && player.dead == false && (player.team != current_player.team))
             {
                 GD.Print(player.ID);
                 GD.Print(player.TilePosition);
