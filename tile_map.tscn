@@ -13,12 +13,16 @@ resource_name = "grass_2"
 texture = ExtResource("1_yxls6")
 texture_region_size = Vector2i(128, 128)
 0:0/0 = 0
+0:0/0/custom_data_0 = "forest"
+0:0/0/custom_data_1 = 2
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_82vbn"]
 resource_name = "grass_1"
 texture = ExtResource("2_e0142")
 texture_region_size = Vector2i(128, 128)
 0:0/0 = 0
+0:0/0/custom_data_0 = "open"
+0:0/0/custom_data_1 = 1
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_051sj"]
 texture = ExtResource("3_gvdr2")
@@ -30,6 +34,8 @@ resource_name = "grass_3"
 texture = ExtResource("3_b20b8")
 texture_region_size = Vector2i(128, 128)
 0:0/0 = 0
+0:0/0/custom_data_0 = "forest"
+0:0/0/custom_data_1 = 2
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2fcev"]
 texture = ExtResource("5_yk6hn")
@@ -54,6 +60,10 @@ tile_shape = 3
 tile_layout = 1
 tile_offset_axis = 1
 tile_size = Vector2i(128, 128)
+custom_data_layer_0/name = "terrain_type"
+custom_data_layer_0/type = 4
+custom_data_layer_1/name = "move_cost"
+custom_data_layer_1/type = 2
 sources/0 = SubResource("TileSetAtlasSource_ugebp")
 sources/1 = SubResource("TileSetAtlasSource_82vbn")
 sources/3 = SubResource("TileSetAtlasSource_rav21")
