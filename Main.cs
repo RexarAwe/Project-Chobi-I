@@ -58,50 +58,31 @@ public partial class Main : Node
         start_round = true;
     }
 
-    // this should be in move rather than a separate function
-    private bool allowed_move()
+    private bool is_occupied(Vector2I pos)
     {
-        GD.Print("checking if legitimate move...");
+        //GD.Print("checking if occupied...");
 
-        // get locations of all other players
         List<Vector2I> player_positions = new List<Vector2I>();
-        //GD.Print("players cnt: " + players.Count);
-        //GD.Print("player positions:");
         foreach (Player player in players)
         {
-            //GD.Print("HERE");
-            //GD.Print(player.ID);
-            //GD.Print(current_player.ID);
 
-            if (player.ID != current_player.ID && player.dead == false)
+            if (player.ID != current_player.ID && !player.dead)
             {
                 player_positions.Add(TileMap.LocalToMap(player.Position));
                 GD.Print(TileMap.LocalToMap(player.Position));
             }
-        } 
+        }
 
-        var target_position = TileMap.LocalToMap(TileMap.GetLocalMousePosition());
-        //GD.Print("target_position: " + target_position);
-        if (allowed_move_positions.Contains(target_position) && !player_positions.Contains(target_position))
+        if (player_positions.Contains(pos))
         {
             //GD.Print("true");
             return true;
         }
-
-        //GD.Print("allowed_move_positions");
-        //for (int i = 0; i < allowed_move_positions.Count; i++)
-        //{
-        //    GD.Print(allowed_move_positions[i]);
-        //}
-        
-        //GD.Print("mouse position");
-        //GD.Print(TileMap.LocalToMap(TileMap.GetLocalMousePosition()));
-        //GD.Print("false");
         return false;
     }
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
+    // Called every frame. 'delta' is the elapsed time since the previous frame.
+    public override void _Process(double delta)
 	{
         //GD.Print(camera.Position.X + ", " + camera.Position.Y);
 
@@ -174,8 +155,14 @@ public partial class Main : Node
             GD.Print("mouse position from viewport: " + TileMap.LocalToMap(GetViewport().GetMousePosition()));
             GD.Print("mouse position from local: " + TileMap.LocalToMap(TileMap.GetLocalMousePosition()));
 
+            // get thte tile that was clicked on
+            GD.Print("mouse position from local: " + TileMap.LocalToMap(TileMap.GetLocalMousePosition()));
+
+            GD.Print(TileMap.GetCellTileData(0, TileMap.LocalToMap(TileMap.GetLocalMousePosition())).GetCustomData("terrain_type"));
+
             //if (current_player.Playing && round_ongoing && allowed_move())
-            if (current_player.Playing && moving && allowed_move() && !hud.hovered_over_ui)
+            //if (current_player.Playing && moving && allowed_move() && !hud.hovered_over_ui)
+            if (current_player.Playing && moving && !hud.hovered_over_ui)
             {
                 moving = false;
 
@@ -183,7 +170,7 @@ public partial class Main : Node
                 current_player.SetActionPoints(current_player.ActionPoints - 1);
 
                 // reset move range
-                allowed_move_positions.Clear();
+                //allowed_move_positions.Clear();
                 TileMap.ClearLayer(1);
 
                 GD.Print("current_player.ActionPoints: " + current_player.ActionPoints);
@@ -218,6 +205,16 @@ public partial class Main : Node
                         target.Destroy();
                         // adjust player list // TODO
                         // or just when going to next player turn, check if already dead, if so, go to the next and so on
+
+                        // check if match ends
+                        if (CheckEndMatch())
+                        {
+                            GD.Print("MATCH ENDED!");
+                        }
+                        else
+                        {
+                            GD.Print("MATCH CONTINUES!");
+                        }
                     }
                 }
 
@@ -298,7 +295,19 @@ public partial class Main : Node
 
     public void StartRound()
     {
-        GD.Print("Starting Round");
+        //GD.Print("Setting up the round");
+        //// set up the round
+        //Player player = PlayerScene.Instantiate<Player>();
+        //// determine player starting spots and team allocations
+        //AddChild(player);
+
+        // create characters and set up position for each team
+
+
+        GD.Print("Starting the round");
+
+        
+
         CollectPlayers();
         CheckPlayers();
         ShufflePlayersList();
@@ -308,20 +317,6 @@ public partial class Main : Node
         ResetActionPoints();
         PlayTurn(); // play first turn
     }
-
-    // let the next player play their turn
-    //public void PlayTurn()
-    //{
-    //    // setup next player index
-    //    current_player = players[current_player_idx];
-
-    //    GD.Print("Playing " + current_player.ID + "'s Turn");
-    //    current_player.SetPlaying(true);
-    //    current_player_idx++;
-
-    //    GD.Print("remaining action points: " + current_player.ActionPoints);
-    //    //PerformAction();
-    //}
 
     public void PlayTurn()
     {
@@ -375,46 +370,6 @@ public partial class Main : Node
         }
     }
 
-    //public void PlayTurn()
-    //{
-    //    if (current_player_idx >= players.Count)
-    //    {
-    //        GD.Print("All players have played a turn. Starting new round.");
-    //        TileMap.ClearLayer(1);
-    //        //round_ongoing = false;
-    //        StartRound();
-    //    }
-    //    else
-    //    {
-    //        // setup next player index
-    //        current_player = players[current_player_idx];
-
-    //        // skip players that were killed before their turns
-    //        while (current_player.dead && current_player_idx < players.Count)
-    //        {
-    //            current_player_idx++;
-    //            current_player = players[current_player_idx];
-    //        }
-
-    //        if (current_player_idx < players.Count)
-    //        {
-    //            GD.Print("Playing " + current_player.ID + "'s Turn");
-    //            current_player.SetPlaying(true);
-    //            current_player_idx++;
-
-    //            GD.Print("remaining action points: " + current_player.ActionPoints);
-    //            ////PerformAction();
-    //        }
-    //        else
-    //        {
-    //            GD.Print("All players have played a turn. Starting new round.");
-    //            TileMap.ClearLayer(1);
-    //            //round_ongoing = false;
-    //            StartRound();
-    //        }
-    //    }
-    //}
-
     public void PerformAction()
     {
         // enable the action buttons
@@ -442,7 +397,8 @@ public partial class Main : Node
         TileMap.ClearLayer(1);
 
         // MoveRange
-        allowed_move_positions = MoveRange();
+        //allowed_move_positions = MoveRange();
+        allowed_move_positions = MovePotential(current_player.TilePosition, current_player.Speed);
         for (int i = 0; i < allowed_move_positions.Count; i++)
         {
             //GD.Print("  " + allowed_move_positions[i]);
@@ -578,6 +534,7 @@ public partial class Main : Node
         }
     }
 
+    // return list of positions that are movable given remaining move points
     public List<Vector2I> GetNeighbors(Vector2I orig_map_position)
     {
         List<Vector2I> map_pos_list = new List<Vector2I>();
@@ -586,14 +543,19 @@ public partial class Main : Node
         // add the neighboring tiles to the list
         map_position = TileMap.GetNeighborCell(orig_map_position, TileSet.CellNeighbor.TopLeftSide);
         map_pos_list.Add(map_position);
+
         map_position = TileMap.GetNeighborCell(orig_map_position, TileSet.CellNeighbor.TopSide);
         map_pos_list.Add(map_position);
+
         map_position = TileMap.GetNeighborCell(orig_map_position, TileSet.CellNeighbor.TopRightSide);
         map_pos_list.Add(map_position);
+
         map_position = TileMap.GetNeighborCell(orig_map_position, TileSet.CellNeighbor.BottomRightSide);
         map_pos_list.Add(map_position);
+
         map_position = TileMap.GetNeighborCell(orig_map_position, TileSet.CellNeighbor.BottomSide);
         map_pos_list.Add(map_position);
+
         map_position = TileMap.GetNeighborCell(orig_map_position, TileSet.CellNeighbor.BottomLeftSide);
         map_pos_list.Add(map_position);
 
@@ -602,33 +564,46 @@ public partial class Main : Node
         return map_pos_list;
     }
 
-    public List<Vector2I> MoveRange()
+    public List<Vector2I> MovePotential(Vector2I orig_map_position, int move_points)
     {
-        GD.Print("MoveRange");
+        List<Vector2I> map_pos_list = new List<Vector2I>();
+        Vector2I map_position;
 
-        List<Vector2I> anchor_map_pos_list = new List<Vector2I>();
-        List<Vector2I> temp_map_pos_list;
-        List<Vector2I> ret_map_pos_list = new List<Vector2I>();
-
-        var orig_map_position = TileMap.LocalToMap(current_player.Position);
-        anchor_map_pos_list.Add(orig_map_position);
-
-        for (int i = 0; i < current_player.Speed; i++)
+        // Function to check move cost and add position if move points are sufficient and there is no one else occupying it
+        void CheckAndAddNeighbor(TileSet.CellNeighbor neighbor)
         {
-            temp_map_pos_list = new List<Vector2I>();
-
-            foreach (Vector2I anchor_position in anchor_map_pos_list)
+            map_position = TileMap.GetNeighborCell(orig_map_position, neighbor);
+            GD.Print("HERE: " + TileMap.GetCellTileData(0, map_position).GetCustomData("move_cost"));
+            
+            //var temp = TileMap.GetCellTileData(0, map_position).GetCustomData("move_cost");
+            int move_cost = (int)TileMap.GetCellTileData(0, map_position).GetCustomData("move_cost");
+            GD.Print("HERE: " + move_cost);
+            if (move_cost <= move_points && !is_occupied(map_position))
             {
-                temp_map_pos_list.AddRange(GetNeighbors(anchor_position));
-                ret_map_pos_list.AddRange(GetNeighbors(anchor_position));
+                map_pos_list.Add(map_position);
             }
-
-            anchor_map_pos_list = temp_map_pos_list; // assign the new anchors
         }
 
-        ret_map_pos_list = RemoveDuplicatesFromList(ret_map_pos_list); // get rid of duplicates
+        // Check and add neighbors based on move points
+        CheckAndAddNeighbor(TileSet.CellNeighbor.TopLeftSide);
+        CheckAndAddNeighbor(TileSet.CellNeighbor.TopSide);
+        CheckAndAddNeighbor(TileSet.CellNeighbor.TopRightSide);
+        CheckAndAddNeighbor(TileSet.CellNeighbor.BottomRightSide);
+        CheckAndAddNeighbor(TileSet.CellNeighbor.BottomSide);
+        CheckAndAddNeighbor(TileSet.CellNeighbor.BottomLeftSide);
 
-        return ret_map_pos_list;
+        // Recursively call GetNeighbors on each added position if move points remain
+        foreach (Vector2I position in map_pos_list.ToArray())
+        {
+            int remaining_move_points = move_points - (int)TileMap.GetCellTileData(0, position).GetCustomData("move_cost");
+            if (remaining_move_points > 0)
+            {
+                List<Vector2I> additional_neighbors = MovePotential(position, remaining_move_points);
+                map_pos_list.AddRange(additional_neighbors);
+            }
+        }
+
+        return map_pos_list;
     }
 
     public List<Vector2I> MeleeAttackRange()
@@ -669,7 +644,7 @@ public partial class Main : Node
         List<Vector2I> target_tile_list = new List<Vector2I>();
         foreach (Player player in players)
         {
-            if (player.ID != current_player.ID && player.dead == false)
+            if (player.ID != current_player.ID && player.dead == false && (player.team != current_player.team))
             {
                 GD.Print(player.ID);
                 GD.Print(player.TilePosition);
@@ -681,5 +656,34 @@ public partial class Main : Node
         }
 
         return target_tile_list;
+    }
+
+    // only a single team left for players that are still alive
+    public bool CheckEndMatch()
+    {
+        int current_team = -1;
+        foreach (Player player in players) 
+        { 
+            if (!player.dead)
+            {
+                if (current_team == -1)
+                {
+                    current_team = player.team;
+                }
+                else
+                {
+                    if (current_team != player.team)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        current_team = player.team;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 }

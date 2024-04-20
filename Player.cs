@@ -7,6 +7,9 @@ using static Godot.Projection;
 
 public partial class Player : Area2D
 {
+    [Export]
+    public int team { get; set; }
+
     //[Signal]
     //public delegate void MovedPlayerEventHandler();
     [Signal]

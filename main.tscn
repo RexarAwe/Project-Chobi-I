@@ -19,13 +19,14 @@ visible = false
 [node name="TileMap" parent="." instance=ExtResource("1_6fhrc")]
 
 [node name="Player" parent="." instance=ExtResource("2_3yckp")]
-position = Vector2(253, 621)
+position = Vector2(738, 327)
+team = 1
 
 [node name="Player2" parent="." instance=ExtResource("2_3yckp")]
-position = Vector2(543, 316)
+position = Vector2(345, 316)
 
 [node name="Player3" parent="." instance=ExtResource("2_3yckp")]
-position = Vector2(156, 192)
+position = Vector2(819, 901)
 
 [connection signal="EndTurnActionSelected" from="HUD" to="." method="EndTurn"]
 [connection signal="MeleeAttackActionSelected" from="HUD" to="." method="MeleeAttack"]
