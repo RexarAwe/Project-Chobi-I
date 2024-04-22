@@ -31,15 +31,17 @@ public partial class Player : Area2D
     public int Speed { get; set; } = 2;
 
     public int Strength {  get; set; } = 1;
+    public int Dexterity { get; set; } = 1;
     public int Defense { get; set; } = 1;
     public int Health { get; set; } = 1;
     public int MeleeAttackRange {  get; set; } = 1;
     public int MeleeDamage {  get; set; } = 1;
-    public int RangedAttackRange { get; set; } = 1;
+    public int RangedAttackRange { get; set; } = 3;
     public int RangedDamage { get; set; } = 1;
     public int team_no { get; set; } = -1;
 
     public Vector2I TilePosition { get; set; }
+    public TileData TileData { get; set; }
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -58,6 +60,7 @@ public partial class Player : Area2D
         // center the position to the tilemap
         Position = centered_position;
         TilePosition = TileMap.LocalToMap(Position);
+        TileData = TileMap.GetCellTileData(0, TilePosition);
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -189,6 +192,8 @@ public partial class Player : Area2D
         // center the position to the tilemap
         Position = centered_position;
         TilePosition = TileMap.LocalToMap(Position);
+        TileData = TileMap.GetCellTileData(0, TilePosition);
+        GD.Print("on " + TileData.GetCustomData("terrain_type"));
     }
 
     public void OnMouseEntered()
