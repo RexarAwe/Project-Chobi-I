@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://clu6axic6tf1o"]
+
+[ext_resource type="Script" path="res://Cult.cs" id="1_rhqqh"]
+
+[node name="Cult" type="Node2D"]
+script = ExtResource("1_rhqqh")

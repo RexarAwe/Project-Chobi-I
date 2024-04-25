@@ -198,24 +198,50 @@ public partial class Main : Node
                 // roll for the attack and defense
                 if (AttackRoll(current_player.Dexterity, target.Defense))
                 {
-                    target.Health -= current_player.RangedDamage;
-
-                    if (target.Health <= 0)
+                    if (target.TileData.GetCustomData("terrain_type").ToString() == "forest")
                     {
-                        target.Destroy();
-                        // adjust player list // TODO
-                        // or just when going to next player turn, check if already dead, if so, go to the next and so on
+                        GD.Print("Extra die roll for defender due to being on forest terrain");
 
-                        // check if match ends
-                        if (CheckEndMatch())
+                        if (AttackRoll(current_player.Dexterity, 1))
                         {
-                            GD.Print("MATCH ENDED!");
-                        }
-                        else
-                        {
-                            GD.Print("MATCH CONTINUES!");
+                            target.Health -= current_player.RangedDamage;
+
+                            if (target.Health <= 0)
+                            {
+                                target.Destroy();
+
+                                // check if match ends
+                                if (CheckEndMatch())
+                                {
+                                    GD.Print("MATCH ENDED!");
+                                }
+                                else
+                                {
+                                    GD.Print("MATCH CONTINUES!");
+                                }
+                            }
                         }
                     }
+                    else // only one roll so apply the damage if attacker wins the roll
+                    {
+                        target.Health -= current_player.RangedDamage;
+
+                        if (target.Health <= 0)
+                        {
+                            target.Destroy();
+
+                            // check if match ends
+                            if (CheckEndMatch())
+                            {
+                                GD.Print("MATCH ENDED!");
+                            }
+                            else
+                            {
+                                GD.Print("MATCH CONTINUES!");
+                            }
+                        }
+                    }
+                    
                 }
 
                 ranged_attacking = false;
@@ -266,6 +292,32 @@ public partial class Main : Node
                         }
                     }
                 }
+                else if (Flanked(target)) // check if first attack fails
+                {
+                    GD.Print("Extra die roll for attacker due to the target being flanked");
+
+                    if (AttackRoll(1, target.Defense)) // add an extra dice for flanking bonus
+                    {
+                        target.Health -= current_player.MeleeDamage;
+
+                        if (target.Health <= 0)
+                        {
+                            target.Destroy();
+                            // adjust player list // TODO
+                            // or just when going to next player turn, check if already dead, if so, go to the next and so on
+
+                            // check if match ends
+                            if (CheckEndMatch())
+                            {
+                                GD.Print("MATCH ENDED!");
+                            }
+                            else
+                            {
+                                GD.Print("MATCH CONTINUES!");
+                            }
+                        }
+                    }
+                }
 
                 melee_attacking = false;
                 current_player.SetActionPoints(current_player.ActionPoints - 1);
@@ -301,6 +353,34 @@ public partial class Main : Node
     private int RollDie(int sides)
     {
         return random.Next(sides + 1);
+    }
+
+    // check if the player is flanked by another enemy
+    private bool Flanked(Player player)
+    {
+        List<Vector2I> neighbor_positions = GetNeighbors(player.TilePosition);
+
+        // count number of players not on the same team within neighboring tiles
+        int enemy_near_cnt = 0;
+
+        foreach (Player p in players)
+        {
+            if (p.ID != player.ID && !p.dead)
+            {
+                if (neighbor_positions.Contains(p.TilePosition))
+                {
+                    enemy_near_cnt++;
+                }
+            }
+        }
+
+        // if more than one, return true
+        if (enemy_near_cnt > 1) 
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private bool AttackRoll(int stat_str, int stat_def)
@@ -621,7 +701,7 @@ public partial class Main : Node
         }
     }
 
-    // return list of positions that are movable given remaining move points
+    // return all neighboring tile positions
     public List<Vector2I> GetNeighbors(Vector2I orig_map_position)
     {
         List<Vector2I> map_pos_list = new List<Vector2I>();

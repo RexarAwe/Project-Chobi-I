@@ -10,6 +10,9 @@ public partial class Player : Area2D
     [Export]
     public int team { get; set; }
 
+    [Export]
+    public Cult Cult { get; set; }
+
     //[Signal]
     //public delegate void MovedPlayerEventHandler();
     [Signal]
