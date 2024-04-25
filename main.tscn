@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://ckuyl34k6m82u"]
+[gd_scene load_steps=6 format=3 uid="uid://ckuyl34k6m82u"]
 
 [ext_resource type="PackedScene" uid="uid://d4imqu75qyqjt" path="res://tile_map.tscn" id="1_6fhrc"]
 [ext_resource type="Script" path="res://Main.cs" id="1_h7o1q"]
 [ext_resource type="PackedScene" uid="uid://bgvcdb44dq4c8" path="res://player.tscn" id="2_3yckp"]
 [ext_resource type="PackedScene" uid="uid://b2ebty8yhnduc" path="res://hud.tscn" id="3_qg3rs"]
+[ext_resource type="PackedScene" uid="uid://clu6axic6tf1o" path="res://cult.tscn" id="5_q2nkw"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_h7o1q")
@@ -18,15 +19,26 @@ visible = false
 
 [node name="TileMap" parent="." instance=ExtResource("1_6fhrc")]
 
-[node name="Player" parent="." instance=ExtResource("2_3yckp")]
+[node name="Player" parent="." node_paths=PackedStringArray("Cult") instance=ExtResource("2_3yckp")]
 position = Vector2(738, 327)
 team = 1
+Cult = NodePath("../Cult2")
 
-[node name="Player2" parent="." instance=ExtResource("2_3yckp")]
+[node name="Player2" parent="." node_paths=PackedStringArray("Cult") instance=ExtResource("2_3yckp")]
 position = Vector2(345, 316)
+Cult = NodePath("../Cult1")
 
-[node name="Player3" parent="." instance=ExtResource("2_3yckp")]
+[node name="Player3" parent="." node_paths=PackedStringArray("Cult") instance=ExtResource("2_3yckp")]
 position = Vector2(819, 901)
+Cult = NodePath("../Cult1")
+
+[node name="Cult1" parent="." instance=ExtResource("5_q2nkw")]
+RitualPoints = 10
+CultName = "Chobian"
+
+[node name="Cult2" parent="." instance=ExtResource("5_q2nkw")]
+RitualPoints = 10
+CultName = "Kult of Krystal"
 
 [connection signal="EndTurnActionSelected" from="HUD" to="." method="EndTurn"]
 [connection signal="MeleeAttackActionSelected" from="HUD" to="." method="MeleeAttack"]

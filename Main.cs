@@ -161,8 +161,8 @@ public partial class Main : Node
             GD.Print(TileMap.GetCellTileData(0, TileMap.LocalToMap(TileMap.GetLocalMousePosition())).GetCustomData("terrain_type"));
 
             //if (current_player.Playing && round_ongoing && allowed_move())
-            //if (current_player.Playing && moving && allowed_move() && !hud.hovered_over_ui)
-            if (current_player.Playing && moving && !hud.hovered_over_ui)
+            if (current_player.Playing && moving && allowed_move() && !hud.hovered_over_ui)
+            //if (current_player.Playing && moving && !hud.hovered_over_ui)
             {
                 moving = false;
 
@@ -174,6 +174,81 @@ public partial class Main : Node
                 TileMap.ClearLayer(1);
 
                 GD.Print("current_player.ActionPoints: " + current_player.ActionPoints);
+            }
+
+            if (current_player.Playing && ranged_attacking && !hud.hovered_over_ui)
+            {
+                // do the melee attack stuff here
+
+                // determine the target
+                Player target = null;
+                foreach (Player player in players)
+                {
+                    if (player.ID != current_player.ID)
+                    {
+                        if (player.TilePosition == TileMap.LocalToMap(TileMap.GetLocalMousePosition()))
+                        {
+                            // found target
+                            GD.Print("player " + player.ID + " targeted");
+                            target = player;
+                        }
+                    }
+                }
+
+                // roll for the attack and defense
+                if (AttackRoll(current_player.Dexterity, target.Defense))
+                {
+                    if (target.TileData.GetCustomData("terrain_type").ToString() == "forest")
+                    {
+                        GD.Print("Extra die roll for defender due to being on forest terrain");
+
+                        if (AttackRoll(current_player.Dexterity, 1))
+                        {
+                            target.Health -= current_player.RangedDamage;
+
+                            if (target.Health <= 0)
+                            {
+                                target.Destroy();
+
+                                // check if match ends
+                                if (CheckEndMatch())
+                                {
+                                    GD.Print("MATCH ENDED!");
+                                }
+                                else
+                                {
+                                    GD.Print("MATCH CONTINUES!");
+                                }
+                            }
+                        }
+                    }
+                    else // only one roll so apply the damage if attacker wins the roll
+                    {
+                        target.Health -= current_player.RangedDamage;
+
+                        if (target.Health <= 0)
+                        {
+                            target.Destroy();
+
+                            // check if match ends
+                            if (CheckEndMatch())
+                            {
+                                GD.Print("MATCH ENDED!");
+                            }
+                            else
+                            {
+                                GD.Print("MATCH CONTINUES!");
+                            }
+                        }
+                    }
+                    
+                }
+
+                ranged_attacking = false;
+                current_player.SetActionPoints(current_player.ActionPoints - 1);
+
+                allowed_attack_positions.Clear();
+                TileMap.ClearLayer(1);
             }
 
             if (current_player.Playing && melee_attacking && !hud.hovered_over_ui)
@@ -200,7 +275,7 @@ public partial class Main : Node
                 {
                     target.Health -= current_player.MeleeDamage;
 
-                    if (target.Health <= 0) 
+                    if (target.Health <= 0)
                     {
                         target.Destroy();
                         // adjust player list // TODO
@@ -214,6 +289,32 @@ public partial class Main : Node
                         else
                         {
                             GD.Print("MATCH CONTINUES!");
+                        }
+                    }
+                }
+                else if (Flanked(target)) // check if first attack fails
+                {
+                    GD.Print("Extra die roll for attacker due to the target being flanked");
+
+                    if (AttackRoll(1, target.Defense)) // add an extra dice for flanking bonus
+                    {
+                        target.Health -= current_player.MeleeDamage;
+
+                        if (target.Health <= 0)
+                        {
+                            target.Destroy();
+                            // adjust player list // TODO
+                            // or just when going to next player turn, check if already dead, if so, go to the next and so on
+
+                            // check if match ends
+                            if (CheckEndMatch())
+                            {
+                                GD.Print("MATCH ENDED!");
+                            }
+                            else
+                            {
+                                GD.Print("MATCH CONTINUES!");
+                            }
                         }
                     }
                 }
@@ -252,6 +353,34 @@ public partial class Main : Node
     private int RollDie(int sides)
     {
         return random.Next(sides + 1);
+    }
+
+    // check if the player is flanked by another enemy
+    private bool Flanked(Player player)
+    {
+        List<Vector2I> neighbor_positions = GetNeighbors(player.TilePosition);
+
+        // count number of players not on the same team within neighboring tiles
+        int enemy_near_cnt = 0;
+
+        foreach (Player p in players)
+        {
+            if (p.ID != player.ID && !p.dead)
+            {
+                if (neighbor_positions.Contains(p.TilePosition))
+                {
+                    enemy_near_cnt++;
+                }
+            }
+        }
+
+        // if more than one, return true
+        if (enemy_near_cnt > 1) 
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private bool AttackRoll(int stat_str, int stat_def)
@@ -406,6 +535,21 @@ public partial class Main : Node
         }
     }
 
+    private bool allowed_move()
+    {
+        GD.Print("checking if legitimate move...");
+
+        var target_position = TileMap.LocalToMap(TileMap.GetLocalMousePosition());
+        //GD.Print("target_position: " + target_position);
+        if (allowed_move_positions.Contains(target_position))
+        {
+            //GD.Print("true");
+            return true;
+        }
+
+        return false;
+    }
+
     public void MeleeAttack()
     {
         GD.Print("MeleeAttack");
@@ -436,7 +580,30 @@ public partial class Main : Node
 
     public void RangedAttack()
     {
-        ranged_attacking = true;
+        GD.Print("RangedAttack");
+        // check for any valid targets
+        allowed_attack_positions = RangedAttackRange();
+
+        GD.Print("allowed_attack_positions count: " + allowed_attack_positions.Count);
+
+        if (allowed_attack_positions.Count > 0)
+        {
+            ranged_attacking = true;
+
+            int atlus_source_id = 6;
+            Vector2I atlus_coord = new Vector2I(0, 0);
+            int alternative_tile = 0;
+
+            for (int i = 0; i < allowed_attack_positions.Count; i++)
+            {
+                //GD.Print("  " + allowed_move_positions[i]);
+                TileMap.SetCell(1, allowed_attack_positions[i], atlus_source_id, atlus_coord, alternative_tile);
+            }
+        }
+        else
+        {
+            GD.Print("No Valid Ranged Attack Targets");
+        }
     }
 
     public void Pray()
@@ -534,7 +701,7 @@ public partial class Main : Node
         }
     }
 
-    // return list of positions that are movable given remaining move points
+    // return all neighboring tile positions
     public List<Vector2I> GetNeighbors(Vector2I orig_map_position)
     {
         List<Vector2I> map_pos_list = new List<Vector2I>();
@@ -604,6 +771,58 @@ public partial class Main : Node
         }
 
         return map_pos_list;
+    }
+
+    public List<Vector2I> RangedAttackRange()
+    {
+        GD.Print("RangedAttackRange");
+        //current_player.MeleeAttackRange;
+
+        List<Vector2I> anchor_map_pos_list = new List<Vector2I>();
+        List<Vector2I> temp_map_pos_list;
+        List<Vector2I> within_range_list = new List<Vector2I>();
+
+        var orig_map_position = TileMap.LocalToMap(current_player.Position);
+        anchor_map_pos_list.Add(orig_map_position);
+
+        // check if any other player within melee attack range
+        for (int i = 0; i < current_player.RangedAttackRange; i++)
+        {
+            temp_map_pos_list = new List<Vector2I>();
+
+            foreach (Vector2I anchor_position in anchor_map_pos_list)
+            {
+                temp_map_pos_list.AddRange(GetNeighbors(anchor_position));
+                within_range_list.AddRange(GetNeighbors(anchor_position));
+            }
+
+            anchor_map_pos_list = temp_map_pos_list; // assign the new anchors
+        }
+
+        within_range_list = RemoveDuplicatesFromList(within_range_list); // get rid of duplicates
+
+        GD.Print("within_range_list: ");
+        for (int i = 0; i < within_range_list.Count; i++)
+        {
+            GD.Print(within_range_list[i]);
+        }
+
+        // check if any player positions are within this range, if not, remove it from the list
+        List<Vector2I> target_tile_list = new List<Vector2I>();
+        foreach (Player player in players)
+        {
+            if (player.ID != current_player.ID && player.dead == false && (player.team != current_player.team))
+            {
+                GD.Print(player.ID);
+                GD.Print(player.TilePosition);
+                if (within_range_list.Contains((Vector2I)player.TilePosition))
+                {
+                    target_tile_list.Add((Vector2I)player.TilePosition);
+                }
+            }
+        }
+
+        return target_tile_list;
     }
 
     public List<Vector2I> MeleeAttackRange()
