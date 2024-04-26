@@ -449,6 +449,7 @@ public partial class Main : Node
 
     public void PlayTurn()
     {
+        
         GD.Print("current_player_idx: " + current_player_idx);
         GD.Print("players.Count: " + players.Count);
 
@@ -477,6 +478,10 @@ public partial class Main : Node
                 
                 GD.Print("Playing " + current_player.ID + "'s Turn");
                 current_player.SetPlaying(true);
+
+                // need to check if the player was praying and disable it
+                current_player.praying = false;
+
                 current_player_idx++;
 
                 GD.Print("remaining action points: " + current_player.ActionPoints);
@@ -608,7 +613,47 @@ public partial class Main : Node
 
     public void Pray()
     {
-        praying = true;
+        if (current_player.ActionPoints >= 2)
+        {
+            praying = true;
+
+            GD.Print("Pray");
+            current_player.praying = true;
+
+            // roll to generate ritual points
+            int val = RollDie(10);
+            current_player.Cult.RitualPoints = current_player.Cult.RitualPoints + val;
+            GD.Print("prayer has added " + val + " ritual points to their cult");
+
+            // requires 2 action points
+            current_player.SetActionPoints(current_player.ActionPoints - 2);
+
+            if (current_player.ActionPoints <= 0)
+            {
+                current_player.SetPlaying(false);
+
+                if (current_player_idx < players.Count)
+                {
+                    PlayTurn(); // play next player
+                }
+                else
+                {
+                    GD.Print("All players have played a turn.");
+                    TileMap.ClearLayer(1);
+                    //round_ongoing = false;
+                    StartRound();
+                }
+            }
+            else
+            {
+                // do i need this?
+                PerformAction();
+            }
+        }
+        else
+        {
+            GD.Print("Not enough action points");
+        }
     }
 
     public void Ritual()

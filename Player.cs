@@ -42,6 +42,7 @@ public partial class Player : Area2D
     public int RangedAttackRange { get; set; } = 3;
     public int RangedDamage { get; set; } = 1;
     public int team_no { get; set; } = -1;
+    public bool praying { get; set; } = false;
 
     public Vector2I TilePosition { get; set; }
     public TileData TileData { get; set; }
